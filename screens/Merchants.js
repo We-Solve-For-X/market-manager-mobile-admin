@@ -29,7 +29,7 @@ export default class Merchants extends React.Component {
     return (
       <View style={styles.container}>
         <Text>Merchants</Text>
-        <Button title="Details" onPress={() => this.props.navigation.navigate('MerchantsManage')} />
+        <Button title="View Merchant" onPress={() => this.props.navigation.navigate('MerchantsDetails')} />
      
       </View>
     )

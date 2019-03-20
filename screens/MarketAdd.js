@@ -7,7 +7,7 @@ import colors from '../constants/colors'
 import layout from '../constants/layout'
 //API
 
-export default class MerchantsManage extends React.Component {
+export default class MarketAdd extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -29,8 +29,7 @@ export default class MerchantsManage extends React.Component {
     const { } = this.state
     return (
       <View style={styles.container}>
-        <Text>MerchantsManage</Text>
-
+        <Text>MarketAdd</Text>
         <ButtonFloat navigation={navigation}/>
       </View>
     )

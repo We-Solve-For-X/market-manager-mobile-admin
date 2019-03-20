@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, StyleSheet, Text, Button } from 'react-native'
+import { View, StyleSheet, Text } from 'react-native'
+import ButtonFloat from '../components/common/ButtonFloat'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
 import layout from '../constants/layout'
 //API
 
-export default class Communication extends React.Component {
+export default class CommunicationNew extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -28,10 +29,9 @@ export default class Communication extends React.Component {
     const { } = this.state
     return (
       <View style={styles.container}>
-        <Text>Communication</Text>
-        <Button title="Communication New" onPress={() => this.props.navigation.navigate('CommunicationNew')} />
-        <Button title="Communication View" onPress={() => this.props.navigation.navigate('CommunicationView')} />
-    
+        <Text>CommunicationNew</Text>
+
+        <ButtonFloat navigation={navigation}/>
       </View>
     )
   }
@@ -55,7 +55,7 @@ export default class Communication extends React.Component {
   }
 
   static navigationOptions = {
-    title: 'Communication',
+    title: 'Links',
     header: null
   }
 }

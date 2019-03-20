@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Text, Button } from 'react-native'
+import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
+import { Button, Text, Icon } from '@shoutem/ui'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
@@ -28,8 +29,17 @@ export default class Markets extends React.Component {
     const { } = this.state
     return (
       <View style={styles.container}>
+      <ScrollView>
+        <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.props.navigation.navigate('MarketAdd')}>
+          <Icon name="add-event" />
+          <Text>CREATE NEW MARKET</Text>
+        </Button>
+        <FlatList/>
+
+      </ScrollView>
         <Text>Markets</Text>
-        <Button title="Details" onPress={() => this.props.navigation.navigate('MarketDetails')} />
+        <Button title="Add Market Instance" onPress={() => this.props.navigation.navigate('MarketAdd')} />
+        <Button title="View Market" onPress={() => this.props.navigation.navigate('MarketDetails')} />
       </View>
     )
   }

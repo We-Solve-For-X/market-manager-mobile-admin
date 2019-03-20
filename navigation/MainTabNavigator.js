@@ -1,17 +1,18 @@
 import React from 'react'
-import { Platform } from 'react-native'
-import { createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation'
+import { Platform, Easing, Animated, Text } from 'react-native'
+import { createStackNavigator, createMaterialTopTabNavigator, TransitionConfig } from 'react-navigation'
 import colors from '../constants/colors'
-
 import TabBarIcon from '../components/TabBarIcon'
-
 import Home from '../screens/Home'
 import Markets from '../screens/Markets'
 import MarketDetails from '../screens/MarketDetails'
-import MarketPayments from '../screens/MarketPayments'
+import MarketAdd from '../screens/MarketAdd'
 import Merchants from '../screens/Merchants'
-import MerchantsManage from '../screens/MerchantsManage'
+import MerchantsDetails from '../screens/MerchantsDetails'
 import Communication from '../screens/Communication'
+import CommunicationNew from '../screens/CommunicationNew'
+import CommunicationView from '../screens/CommunicationView'
+import HeaderScreen from '../components/common/HeaderScreen'
 
 const HomeStack = createStackNavigator({
   Home: Home,
@@ -84,7 +85,7 @@ CommunicationStack.navigationOptions = {
 }
 
 const PrimaryNavConfig = {
-  initialRouteName: 'HomeStack',
+  initialRouteName: 'MarketsStack',
   lazy: 'true',
   tabBarOptions:{
       indicatorStyle:{
@@ -101,16 +102,95 @@ const MainTabNav = createMaterialTopTabNavigator({
   MarketsStack,
   MerchantsStack,
   CommunicationStack
-},
-PrimaryNavConfig
-)
+}, PrimaryNavConfig)
 
 
+const stackNavConfig = {
+  headerMode: 'screen',
+  mode: 'card',
+  defaultNavigationOptions: {
+    gesturesEnabled: false,
+  },
+  transitionConfig: () => ({
+    transitionSpec: {
+      duration: 450,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+    },
+    // screenInterpolator: sceneProps => {
+    //   const { layout, position, scene } = sceneProps;
+    //   const { index } = scene;
+
+    //   const height = layout.initHeight;
+    //   const translateY = position.interpolate({
+    //     inputRange: [index - 1, index, index + 1],
+    //     outputRange: [height, 0, 0],
+    //   });
+
+    //   const opacity = position.interpolate({
+    //     inputRange: [index - 1, index - 0.99, index],
+    //     outputRange: [0, 1, 1],
+    //   });
+
+    //   return { opacity, transform: [{ translateY }] };
+    // },
+  }),
+}
 const MainStack = createStackNavigator({
-  MainTabNav: MainTabNav,
-  MerchantsManage: MerchantsManage,
-  MarketDetails: MarketDetails,
-  MarketPayments: MarketPayments
-})
+  MainTabNav: {
+    screen: MainTabNav,
+    navigationOptions: () => ({
+      title: `Irene Market Manager`,
+      header: (<HeaderScreen title={'Market Manager'}/>),
+      headerBackTitle: null
+    }),
+  },
+  //MainTabNav: MainTabNav,
+  MerchantsDetails: {
+    screen: MerchantsDetails,
+    navigationOptions: () => ({
+      title: `Merchants Details`,
+      header: (<HeaderScreen title={'Merchant Details'}/>),
+      headerBackTitle: null
+    }),
+  },
+  //MerchantsDetails: MerchantsDetails,
+  //MarketDetails: MarketDetails,
+  MarketDetails: {
+    screen: MarketDetails,
+    navigationOptions: () => ({
+      title: `Market Details`,
+      header: (<HeaderScreen title={'Market Details'}/>),
+      headerBackTitle: null
+    }),
+  },
+  //MarketAdd: MarketAdd,
+  MarketAdd: {
+    screen: MarketAdd,
+    navigationOptions: () => ({
+      title: `Add Market`,
+      header: (<HeaderScreen title={'Add Market'}/>),
+      headerBackTitle: null
+    }),
+  },
+  //CommunicationNew: CommunicationNew,
+  CommunicationNew: {
+    screen: CommunicationNew,
+    navigationOptions: () => ({
+      title: `New Message`,
+      header: (<HeaderScreen title={'New Message'}/>),
+      headerBackTitle: null
+    }),
+  },
+  //CommunicationView: CommunicationView,
+  CommunicationView: {
+    screen: CommunicationView,
+    navigationOptions: () => ({
+      title: `View Message`,
+      header: (<HeaderScreen title={'View Message'}/>),
+      headerBackTitle: null
+    }),
+  },
+}, stackNavConfig)
 
 export default MainStack

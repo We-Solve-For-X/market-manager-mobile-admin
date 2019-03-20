@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native'
+import ButtonFloat from '../components/common/ButtonFloat'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
 import layout from '../constants/layout'
 //API
 
-export default class MarketPayments extends React.Component {
+export default class CommunicationView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -28,7 +29,9 @@ export default class MarketPayments extends React.Component {
     const { } = this.state
     return (
       <View style={styles.container}>
-        <Text>MarketPayments</Text>
+        <Text>Communication View</Text>
+
+        <ButtonFloat navigation={navigation}/>
       </View>
     )
   }
