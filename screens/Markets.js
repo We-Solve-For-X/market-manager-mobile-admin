@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
 import { Button, Text, Icon } from '@shoutem/ui'
 //import axios from 'axios'
 //consts & comps
+import MarketCard from '../components/markets/MarketCard'
 import colors from '../constants/colors'
 import layout from '../constants/layout'
 //API
@@ -30,18 +31,34 @@ export default class Markets extends React.Component {
     return (
       <View style={styles.container}>
       <ScrollView>
+
         <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.props.navigation.navigate('MarketAdd')}>
           <Icon name="add-event" />
           <Text>CREATE NEW MARKET</Text>
         </Button>
-        <FlatList/>
+
+        <FlatList
+          data={[{a: 'Market 1'}, {a : 'Market 2'}]}
+          //keyExtractor={(item) => item.spotSummary.spotId}
+          renderItem={({item}) => this._renderMarket(item.a)}
+          scrollEnabled={false}
+          // isLoading={false}
+          //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
+        />
 
       </ScrollView>
-        <Text>Markets</Text>
+        {/* <Text>Markets</Text>
         <Button title="Add Market Instance" onPress={() => this.props.navigation.navigate('MarketAdd')} />
-        <Button title="View Market" onPress={() => this.props.navigation.navigate('MarketDetails')} />
+        <Button title="View Market" onPress={() => this.props.navigation.navigate('MarketDetails')} /> */}
       </View>
     )
+  }
+
+  _renderMarket = (market) => {
+    const navigation = this.props.navigation
+    return (
+      <MarketCard navigation={navigation} market={market}/>
+      )
   }
 
   _fetchData = async () => {

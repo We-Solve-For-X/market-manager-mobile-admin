@@ -4,7 +4,7 @@ import {  Text, Icon } from '@shoutem/ui'
 
 import colors from '../../constants/colors';
 
-export default class MarketCard extends React.PureComponent {
+export default class MerchentCard extends React.PureComponent {
     constructor(props) {
         super(props)
         this.state = {
@@ -20,7 +20,7 @@ export default class MarketCard extends React.PureComponent {
     const { } = this.state
     return (
       <View style={styles.container}>
-        <Button title="View Market" onPress={() => navigation.navigate('MarketDetails')} />
+        <Button title="View Merchant" onPress={() => navigation.navigate('MerchantsDetails')} />
       </View>
     )
   }

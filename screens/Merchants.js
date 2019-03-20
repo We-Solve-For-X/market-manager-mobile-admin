@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, Text, Button } from 'react-native'
+import { View, StyleSheet, ScrollView, FlatList, Text } from 'react-native'
+import { Title } from '@shoutem/ui'
 //import axios from 'axios'
 //consts & comps
+import MerchantCard from '../components/merchants/MerchantCard'
 import colors from '../constants/colors'
 import layout from '../constants/layout'
 //API
@@ -28,11 +30,48 @@ export default class Merchants extends React.Component {
     const { } = this.state
     return (
       <View style={styles.container}>
-        <Text>Merchants</Text>
+      <ScrollView >
+        <Title>Merchant Requests</Title>
+        <FlatList
+          data={[{a: 'Market 1'}, {a : 'Market 2'}]}
+          //keyExtractor={(item) => item.spotSummary.spotId}
+          renderItem={({item}) => this._renderNewMerch(item.a)}
+          scrollEnabled={false}
+          // isLoading={false}
+          //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
+        />
+
+      <Title>All Merchant</Title>
+        <FlatList
+          data={[{a: 'Market 1'}, {a : 'Market 2'}]}
+          //keyExtractor={(item) => item.spotSummary.spotId}
+          renderItem={({item}) => this._renderMerchant(item.a)}
+          scrollEnabled={false}
+          // isLoading={false}
+          //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
+        />
+
+
+        {/* <Text>Merchants</Text>
         <Button title="View Merchant" onPress={() => this.props.navigation.navigate('MerchantsDetails')} />
-     
+      */}
+      </ScrollView>
       </View>
     )
+  }
+
+  _renderMerchant = (market) => {
+    const navigation = this.props.navigation
+    return (
+      <MerchantCard navigation={navigation} market={market}/>
+      )
+  }
+
+  _renderNewMerch = (market) => {
+    const navigation = this.props.navigation
+    return (
+      <MerchantCard navigation={navigation} market={market}/>
+      )
   }
 
   _fetchData = async () => {
