@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     container: {
         height: 56,
         width: '100%',
-        backgroundColor: colors.pGrey,
+        backgroundColor: colors.pWhite,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'flex-end',

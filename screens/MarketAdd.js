@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
-import { Button, Text, Icon } from '@shoutem/ui'
+import { View, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native'
+import { Button, Text, Icon, Subtitle, TextInput } from '@shoutem/ui'
 import ButtonFloat from '../components/common/ButtonFloat'
 import AttendanceCard from '../components/markets/AttendanceCard'
 import SearchBar from '../components/common/SearchBar'
+import DatePicker from 'react-native-datepicker'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
@@ -16,7 +17,11 @@ export default class MarketAdd extends React.Component {
     this.state = {
       loading: true,
       searchInput: '',
-      verifySubmit: false
+      verifySubmit: false,
+      viewDetails: false,
+
+      mName: '',
+      mDateStart: ''
     }
     //this.signal = axios.CancelToken.source()
   }
@@ -31,30 +36,11 @@ export default class MarketAdd extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const {loading, searchInput, verifySubmit } = this.state
+    const {loading, searchInput, verifySubmit, viewDetails, mName, mDateStart } = this.state
     return (
       <View style={styles.container}>
         <ScrollView>
-          {/* drop down details */}
-          <View>
-            
-          </View>
-          
-
-          {/* details text in */}
-          <View>
-            
-          </View>
-
           {/* submit */}
-          { !verifySubmit ? 
-          (<View>
-            <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.setState({verifySubmit: true})}>
-              <Text>PREPARE SUBMITION</Text>
-              <Icon name="add-event" />
-            </Button>
-          </View>)
-          : (null) }
           { verifySubmit ? 
           (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
             <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.setState({verifySubmit: true})}>
@@ -66,10 +52,80 @@ export default class MarketAdd extends React.Component {
               <Icon name="add-event" />
             </Button>
           </View>)
-          : (null) }
-          
+          : (<View>
+            <Button style={{marginVertical: 10, marginHorizontal: 15, borderWidth: 0.5, borderColor: colors.secondary}} onPress={() => this.setState({verifySubmit: true})}>
+              <Text>ADD MARKET</Text>
+              <Icon name="plus-button" />
+            </Button>
+          </View>) }
+
+
+          {/* drop down details */}
+          <TouchableOpacity onPress={() => this.setState({viewDetails: !viewDetails})} style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: 50, backgroundColor: colors.secondary, paddingHorizontal: 17}}>
+            <Subtitle>Market Details</Subtitle>
+            <Icon name={!viewDetails ? "down-arrow" : "up-arrow"}/>
+          </TouchableOpacity>
           
 
+          {/* details text in */}
+          {!viewDetails ?
+          (<View >
+            <View style={styles.lineContainer}>
+              <View style={{marginRight: 0}}>
+                <Text>Name: </Text>
+              </View>
+              <TextInput
+                placeholder={'Market Name'}
+                onChangeText={(mName) => this.setState({mName})}
+                style={styles.textInput}
+                maxLength={35}
+                value={mName}
+              />
+            </View>
+            <View style={styles.lineContainer}>
+              <View style={{marginRight: 0}}>
+                <Text>Take Note: </Text>
+              </View>
+              <TextInput
+                placeholder={'Take Note'}
+                onChangeText={(mName) => this.setState({mName})}
+                style={styles.textInput}
+                maxLength={35}
+                value={mName}
+              />
+            </View>
+
+            <DatePicker
+              style={{width: 200, height: 60, padding: 0, margin: 0}}
+              date={mDateStart}
+              mode="datetime"
+              placeholder="select a date"
+              format="MMM Do YYYY, h:mm a"
+              minDate="2019-01-01"
+              maxDate="2040-12-01"
+              confirmBtnText="Select"
+              cancelBtnText="Cancel"
+              showIcon={false}
+              customStyles={{
+                dateInput: {
+                  marginLeft: 36, 
+                  borderWidth: 0,
+                  flexDirection: 'row', 
+                  justifyContent: 'flex-start',
+                  padding: 0, margin: 0
+                }
+                // ... You can check the source to find the other keys.
+              }}
+              onDateChange={(mDateStart) => {this.setState({mDateStart: mDateStart})}}
+            />
+
+
+            
+          </View>)
+          :
+          (null)
+          }
+          
           {/* search */}
           <View>
             <SearchBar
@@ -79,8 +135,6 @@ export default class MarketAdd extends React.Component {
           </View>
 
           {/* cards */}
-          
-
           <FlatList
             data={[{a: 'Market 1'}, {a : 'Market 2'}]}
             //keyExtractor={(item) => item.spotSummary.spotId}
@@ -89,11 +143,6 @@ export default class MarketAdd extends React.Component {
             // isLoading={false}
             //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
           />
-
-
-
-
-
         
         </ScrollView>
         <ButtonFloat navigation={navigation}/>
@@ -137,4 +186,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.pViewBg,
   },
+  lineContainer: {
+    width: '100%', 
+    flexDirection: 'row', 
+    justifyContent: 'flex-start', 
+    alignItems: 'center'
+  },
+  textInput: {
+    backgroundColor: 'transparent', 
+    height: 42, 
+    paddingVertical: 0
+  }
 });
