@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
+import { Text, NavigationBar, DropDownMenu, Title, TextInput } from '@shoutem/ui'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
@@ -8,13 +9,36 @@ import layout from '../constants/layout'
 //API
 
 export default class CommunicationNew extends React.Component {
-  constructor(props) {
-    super(props)
+  constructor(props){
+    super(props);
     this.state = {
-      loading: true
+      toOptions: [
+        {
+          date: "All Users",
+        },
+        {
+          date: "Market: 01 April",
+        },
+        {
+          date: "Market: 08 April",
+        },
+        {
+          date: "Market: 15 April",
+        },
+        {
+          date: "Market: 22 April",
+        },
+        {
+          date: "Market: 29 April",
+        },
+      ],
+      toSelected: null,
+      fromUser: 'Corlia De Beer',
+      topic: '',
+      body: ''
     }
-    //this.signal = axios.CancelToken.source()
   }
+  
 
   componentDidMount = () => {
     this._fetchData()
@@ -26,10 +50,49 @@ export default class CommunicationNew extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { } = this.state
+    const { toOptions, toSelected, fromUser, topic, body } = this.state
     return (
       <View style={styles.container}>
-        <Text>CommunicationNew</Text>
+        <View style={{width: '100%'}}>
+          <DropDownMenu
+            styleName="horizontal"
+            options={toOptions}
+            selectedOption={toSelected ? toSelected : toOptions[0]}
+            onOptionSelected={(selected) => this.setState({ toSelected: selected })}
+            titleProperty="date"
+          />
+          <TextInput
+            defaultValue={fromUser}
+            editable={false}
+            //onChangeText={...}
+          />
+          <TextInput
+            placeholder={'Message Topic'}
+            onChangeText={(topic) => this.setState({topic})}
+            maxLength={28}
+            value={topic}
+            //onChangeText={...}
+          />
+        </View>
+        
+
+
+      <View style={{flex: 1, flexDirection: 'row'}}>
+        <TextInput
+          style={{height: '100%', flexDirection: 'column', justifyContent: 'flex-start', width: '100%'}}
+          onChangeText={(body) => this.setState({body})}
+          multiline = {true}
+          //numberOfLines = {2}
+          value={body}
+          //onChangeText={...}
+        />
+      </View>
+      
+
+
+
+
+
 
         <ButtonFloat navigation={navigation}/>
       </View>

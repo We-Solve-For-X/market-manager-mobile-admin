@@ -106,6 +106,7 @@ const MainTabNav = createMaterialTopTabNavigator({
 
 
 const stackNavConfig = {
+  initialRouteName: 'CommunicationNew',
   headerMode: 'screen',
   mode: 'card',
   defaultNavigationOptions: {

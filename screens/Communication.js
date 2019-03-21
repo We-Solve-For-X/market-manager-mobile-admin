@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Text, Button } from 'react-native'
+import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
+import { Button, Text, Icon } from '@shoutem/ui'
+import CommunicCard from '../components/communication/CommunicCard'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
@@ -27,13 +29,42 @@ export default class Communication extends React.Component {
     const { navigation } = this.props
     const { } = this.state
     return (
-      <View style={styles.container}>
-        <Text>Communication</Text>
-        <Button title="Communication New" onPress={() => this.props.navigation.navigate('CommunicationNew')} />
-        <Button title="Communication View" onPress={() => this.props.navigation.navigate('CommunicationView')} />
+      // <View style={styles.container}>
+      //   <Text>Communication</Text>
+      //   <Button title="Communication New" onPress={() => this.props.navigation.navigate('CommunicationNew')} />
+      //   <Button title="Communication View" onPress={() => this.props.navigation.navigate('CommunicationView')} />
     
+      // </View>
+
+
+      <View style={styles.container}>
+        <ScrollView>
+
+          <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.props.navigation.navigate('CommunicationNew')}>
+            <Icon name="add-event" />
+            <Text>NEW MESSAGE</Text>
+          </Button>
+
+          <FlatList
+            data={[{a: 'Message 1'}, {a : 'Message 2'}]}
+            //keyExtractor={(item) => item.spotSummary.spotId}
+            renderItem={({item}) => this._renderMessage(item.a)}
+            scrollEnabled={false}
+            // isLoading={false}
+            //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
+          />
+
+        </ScrollView>
+
       </View>
     )
+  }
+
+  _renderMessage = (market) => {
+    const navigation = this.props.navigation
+    return (
+      <CommunicCard navigation={navigation} market={market}/>
+      )
   }
 
   _fetchData = async () => {
