@@ -17,6 +17,7 @@
     "@shoutem/theme": "^0.11.3",
     "@shoutem/ui": "^0.23.18",
     "expo": "^31.0.2",
+    "moment": "^2.24.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
     "react-native-datepicker": "^1.7.2",

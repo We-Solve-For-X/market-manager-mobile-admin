@@ -5,6 +5,7 @@ import { Text, Button, DropDownMenu, Icon, TextInput } from '@shoutem/ui'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
+import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
 //API
 
@@ -35,7 +36,7 @@ export default class CommunicationNew extends React.Component {
       toSelected: null,
       fromUser: 'Corlia De Beer',
       topic: '',
-      body: ''
+      text: ''
     }
   }
   
@@ -50,12 +51,12 @@ export default class CommunicationNew extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { toOptions, toSelected, fromUser, topic, body } = this.state
+    const { toOptions, toSelected, fromUser, topic, text } = this.state
     return (
       <View style={styles.container}>
         <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
           <View style={styles.lineContainer}>
-            <View style={{marginRight: 21}}>
+            <View style={styles.titleBox}>
               <Text>To: </Text>
             </View>
             <DropDownMenu
@@ -69,21 +70,20 @@ export default class CommunicationNew extends React.Component {
           <View style={styles.divider}/>
 
           <View style={styles.lineContainer}>
-            <View style={{marginRight: 0}}>
+            <View style={styles.titleBox}>
               <Text>From: </Text>
             </View>
             <TextInput
               style={styles.textInput}
               defaultValue={fromUser}
               editable={false}
-              //onChangeText={...}
             />
           </View>
 
           <View style={styles.divider}/>
 
           <View style={styles.lineContainer}>
-            <View style={{marginRight: 0}}>
+            <View style={styles.titleBox}>
               <Text>Topic: </Text>
             </View>
             <TextInput
@@ -102,8 +102,8 @@ export default class CommunicationNew extends React.Component {
 
           
 
-          <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this._sendMessage(toSelected, fromUser, topic, body)}>
-            <Text>SEND MESSAGE</Text>
+          <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this._sendMessage(toSelected, fromUser, topic, text)}>
+            <Text>SEND</Text>
             <Icon name="add-event" />
           </Button>
 
@@ -117,10 +117,10 @@ export default class CommunicationNew extends React.Component {
           <TextInput
             placeholder={'Compose message..'}
             style={{height: '100%', flexDirection: 'column', justifyContent: 'flex-start', width: '100%'}}
-            onChangeText={(body) => this.setState({body})}
+            onChangeText={(text) => this.setState({text})}
             multiline = {true}
             //numberOfLines = {2}
-            value={body}
+            value={text}
             //onChangeText={...}
           />
         </View>
@@ -129,8 +129,8 @@ export default class CommunicationNew extends React.Component {
     )
   }
 
-  _sendMessage = async (to, from, topic, body) => {
-    console.log('sending..', to, body)
+  _sendMessage = async (to, from, topic, text) => {
+    console.log('sending..', to, text)
   }
 
   _fetchData = async () => {
@@ -178,5 +178,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent', 
     height: 42, 
     paddingVertical: 0
+  },
+  titleBox: {
+    width: 50,
+    marginLeft: 12
   }
 });

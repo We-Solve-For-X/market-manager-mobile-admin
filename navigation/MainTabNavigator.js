@@ -85,7 +85,7 @@ CommunicationStack.navigationOptions = {
 }
 
 const PrimaryNavConfig = {
-  initialRouteName: 'MarketsStack',
+  initialRouteName: 'CommunicationStack',
   lazy: 'true',
   tabBarOptions:{
       indicatorStyle:{
@@ -106,7 +106,7 @@ const MainTabNav = createMaterialTopTabNavigator({
 
 
 const stackNavConfig = {
-  initialRouteName: 'MarketAdd',
+  //initialRouteName: 'CommunicationView',
   headerMode: 'screen',
   mode: 'card',
   defaultNavigationOptions: {

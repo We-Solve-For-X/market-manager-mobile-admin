@@ -5,8 +5,10 @@ import CommunicCard from '../components/communication/CommunicCard'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
+import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
 //API
+import { messageList } from "../networking/stubs";
 
 export default class Communication extends React.Component {
   constructor(props) {
@@ -27,7 +29,7 @@ export default class Communication extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { } = this.state
+    const { messages } = this.state
     return (
       // <View style={styles.container}>
       //   <Text>Communication</Text>
@@ -40,15 +42,15 @@ export default class Communication extends React.Component {
       <View style={styles.container}>
         <ScrollView>
 
-          <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.props.navigation.navigate('CommunicationNew')}>
+          <Button style={{marginVertical: 18, marginHorizontal: 45, ...styleConsts.buttonBorder}} onPress={() => this.props.navigation.navigate('CommunicationNew')}>
             <Icon name="add-event" />
             <Text>NEW MESSAGE</Text>
           </Button>
 
           <FlatList
-            data={[{a: 'Message 1'}, {a : 'Message 2'}]}
+            data={messages}
             //keyExtractor={(item) => item.spotSummary.spotId}
-            renderItem={({item}) => this._renderMessage(item.a)}
+            renderItem={({item}) => this._renderMessage(item)}
             scrollEnabled={false}
             // isLoading={false}
             //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
@@ -60,15 +62,16 @@ export default class Communication extends React.Component {
     )
   }
 
-  _renderMessage = (market) => {
+  _renderMessage = (message) => {
     const navigation = this.props.navigation
     return (
-      <CommunicCard navigation={navigation} market={market}/>
+      <CommunicCard navigation={navigation} message={message}/>
       )
   }
 
   _fetchData = async () => {
     console.log("fetching data")
+    this.setState({messages: messageList})
     // this.setState({ loading: true })
     // const response = await fetchLocationDetails(spotId, this.signal.token)
     // if (response.code == 200) {
@@ -94,6 +97,7 @@ export default class Communication extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 10,
     backgroundColor: colors.pViewBg,
   },
 });
