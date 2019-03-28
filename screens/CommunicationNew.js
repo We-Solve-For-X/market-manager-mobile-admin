@@ -177,7 +177,8 @@ const styles = StyleSheet.create({
   textInput: {
     backgroundColor: 'transparent', 
     height: 42, 
-    paddingVertical: 0
+    paddingVertical: 0,
+    width: '100%'
   },
   titleBox: {
     width: 50,

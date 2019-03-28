@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
+import { Icon } from '@shoutem/ui'
 //import Icon from '../icons/icons'
 //  Config
 import layout from '../../constants/layout'
@@ -8,8 +9,8 @@ import colors from '../../constants/colors'
 export default ButtonFloat = ({navigation}) =>{
     return(
         <TouchableOpacity style={styles.fab} onPress={() => navigation.goBack()}>
-            {/* <Icon name={"arrow-back"} color={'white'} size={26} /> */}
-            <Text>Go Back</Text>
+            <Icon name={"back"}  />
+            {/* <Text>Go Back</Text> */}
         </TouchableOpacity>
     )
 }
