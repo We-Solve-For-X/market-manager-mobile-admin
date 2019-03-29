@@ -5,8 +5,10 @@ import { Button, Text, Icon } from '@shoutem/ui'
 //consts & comps
 import MarketCard from '../components/markets/MarketCard'
 import colors from '../constants/colors'
+import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
 //API
+import { markets } from "../networking/stubs";
 
 export default class Markets extends React.Component {
   constructor(props) {
@@ -28,28 +30,27 @@ export default class Markets extends React.Component {
   render() {
     const { navigation } = this.props
     const { } = this.state
+    
     return (
       <View style={styles.container}>
       <ScrollView>
 
-        <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.props.navigation.navigate('MarketAdd')}>
+        <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.props.navigation.navigate('MarketAdd')}>
           <Icon name="add-event" />
           <Text>CREATE NEW MARKET</Text>
         </Button>
 
         <FlatList
-          data={[{a: 'Market 1'}, {a : 'Market 2'}]}
+          data={markets}
           //keyExtractor={(item) => item.spotSummary.spotId}
-          renderItem={({item}) => this._renderMarket(item.a)}
+          renderItem={({item}) => this._renderMarket(item)}
           scrollEnabled={false}
           // isLoading={false}
           //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
         />
 
       </ScrollView>
-        {/* <Text>Markets</Text>
-        <Button title="Add Market Instance" onPress={() => this.props.navigation.navigate('MarketAdd')} />
-        <Button title="View Market" onPress={() => this.props.navigation.navigate('MarketDetails')} /> */}
+        
       </View>
     )
   }
@@ -89,5 +90,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.pViewBg,
+    paddingHorizontal: 10,
   },
 });

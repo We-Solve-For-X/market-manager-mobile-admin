@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.pViewBg,
-    paddingHorizontal: 8
+    paddingHorizontal: 10
   },
   lineContainer: {
     width: '100%', 

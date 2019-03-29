@@ -1,17 +1,216 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native'
-import { Button, Text, Icon, Subtitle, TextInput } from '@shoutem/ui'
+import { View, StyleSheet } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
-import AttendanceCard from '../components/markets/AttendanceCard'
-import SearchBar from '../components/common/SearchBar'
-import DatePicker from 'react-native-datepicker'
+import { Text, Button, DropDownMenu, Icon, TextInput } from '@shoutem/ui'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
+import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
 //API
 
-export default class MarketAdd extends React.Component {
+export default class CommunicationNew extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      verifySubmit: false,
+      name: '', 
+      description: '', 
+      takeNote: '', 
+      setupStart: '', 
+      marketStart: '', 
+      marketEnd: ''
+    }
+  }
+  
+
+  componentDidMount = () => {
+    this._fetchData()
+  }
+
+  // componentWillUnmount() {
+  //   this.signal.cancel('API request canceled due to componentUnmount')
+  // }
+
+  render() {
+    const { navigation } = this.props
+    const { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd } = this.state
+
+    return (
+      <View style={styles.container}>
+        <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
+
+        <View style={styles.lineContainer}>
+            <View style={styles.titleBox}>
+              <Text>Name: </Text>
+            </View>
+            <TextInput
+              placeholder={'Short name for the market instance'}
+              onChangeText={(name) => this.setState({name})}
+              style={styles.textInput}
+              maxLength={28}
+              value={name}
+            />
+          </View>
+
+          <View style={styles.divider}/>
+
+          <View style={styles.lineContainer}>
+            <View style={styles.titleBox}>
+              <Text>Description: </Text>
+            </View>
+            <TextInput
+              placeholder={'Description of the market instance'}
+              onChangeText={(description) => this.setState({description})}
+              style={styles.textInput}
+              maxLength={28}
+              value={description}
+            />
+          </View>
+
+          <View style={styles.divider}/>
+
+          <View style={styles.lineContainer}>
+            <View style={styles.titleBox}>
+              <Text>Take Note: </Text>
+            </View>
+            <TextInput
+              placeholder={'Information that will be usefull to the merchants'}
+              onChangeText={(takeNote) => this.setState({takeNote})}
+              style={styles.textInput}
+              numberOfLines={4}
+              value={takeNote}
+            />
+          </View>
+
+          <View style={styles.divider}/>
+
+          <View style={{width: '100%', flexDirection: 'row', justifyContent: 'flex-end'}}>
+
+          
+
+          { verifySubmit ? 
+          (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.setState({verifySubmit: true})}>
+              <Text>YES, ADD IT</Text>
+              <Icon name="add-event" />
+            </Button>
+            <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.setState({verifySubmit: false})}>
+              <Text>WAIT - CANCEL</Text>
+              <Icon name="add-event" />
+            </Button>
+          </View>)
+          : (<View>
+            <Button style={{marginVertical: 10, marginHorizontal: 15, borderWidth: 0.5, borderColor: colors.secondary}} onPress={() => this.setState({verifySubmit: true})}>
+              <Text>CREATE</Text>
+              <Icon name="plus-button" />
+            </Button>
+          </View>) }
+
+          </View>
+          
+        </View>
+
+        
+
+        <View style={{flex: 1, flexDirection: 'row'}}>
+          <TextInput
+            placeholder={'Compose message..'}
+            style={{height: '100%', flexDirection: 'column', justifyContent: 'flex-start', width: '100%'}}
+            onChangeText={(text) => this.setState({text})}
+            multiline = {true}
+            //numberOfLines = {2}
+            value={'text'}
+            //onChangeText={...}
+          />
+        </View>
+        <ButtonFloat navigation={navigation}/>
+      </View>
+    )
+  }
+
+  _sendMessage = async (to, from, topic, text) => {
+    console.log('sending..', to, text)
+  }
+
+  _fetchData = async () => {
+    console.log("fetching data")
+    // this.setState({ loading: true })
+    // const response = await fetchLocationDetails(spotId, this.signal.token)
+    // if (response.code == 200) {
+    //   this.setState({
+    //     surfSpot: response.data.spot,
+    //     meta: response.data.meta,
+    //     loading: false
+    //   }) 
+    // } else {
+    //   this.setState({
+    //     errorMessage: response.data,
+    //     loading: false
+    //   })
+    // }
+  }
+
+  static navigationOptions = {
+    title: 'Links',
+    header: null
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.pViewBg,
+    paddingHorizontal: 10
+  },
+  lineContainer: {
+    width: '100%', 
+    flexDirection: 'row', 
+    justifyContent: 'flex-start', 
+    alignItems: 'center'
+  },
+  divider: {
+    width: '98%', 
+    height: 1, 
+    backgroundColor: colors.pBlack
+  },
+  textInput: {
+    backgroundColor: 'transparent', 
+    //height: 42, 
+    paddingVertical: 0,
+    width: '100%'
+  },
+  titleBox: {
+    width: 85,
+    marginLeft: 12
+  },
+
+});
+
+
+
+
+
+
+
+
+
+
+
+// import React from 'react';
+// import { View, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native'
+// import { Button, Text, Icon, Subtitle, TextInput } from '@shoutem/ui'
+// import ButtonFloat from '../components/common/ButtonFloat'
+// import AttendanceCard from '../components/markets/AttendanceCard'
+// import SearchBar from '../components/common/SearchBar'
+// import DatePicker from 'react-native-datepicker'
+// //import axios from 'axios'
+// //consts & comps
+// import colors from '../constants/colors'
+// import layout from '../constants/layout'
+// //API
+
+ class MarketAdd extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -41,34 +240,18 @@ export default class MarketAdd extends React.Component {
       <View style={styles.container}>
         <ScrollView>
           {/* submit */}
-          { verifySubmit ? 
-          (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.setState({verifySubmit: true})}>
-              <Text>YES, ADD IT</Text>
-              <Icon name="add-event" />
-            </Button>
-            <Button style={{marginVertical: 10, marginHorizontal: 15}} onPress={() => this.setState({verifySubmit: false})}>
-              <Text>WAIT - CANCEL</Text>
-              <Icon name="add-event" />
-            </Button>
-          </View>)
-          : (<View>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, borderWidth: 0.5, borderColor: colors.secondary}} onPress={() => this.setState({verifySubmit: true})}>
-              <Text>ADD MARKET</Text>
-              <Icon name="plus-button" />
-            </Button>
-          </View>) }
+          
 
 
           {/* drop down details */}
           <TouchableOpacity onPress={() => this.setState({viewDetails: !viewDetails})} style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: 50, backgroundColor: colors.secondary, paddingHorizontal: 17}}>
             <Subtitle>Market Details</Subtitle>
-            <Icon name={!viewDetails ? "down-arrow" : "up-arrow"}/>
+            {/* <Icon name={!viewDetails ? "down-arrow" : "up-arrow"}/> */}
           </TouchableOpacity>
           
 
           {/* details text in */}
-          {!viewDetails ?
+          {true ?
           (<View >
             <View style={styles.lineContainer}>
               <View style={{marginRight: 0}}>
@@ -181,20 +364,21 @@ export default class MarketAdd extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.pViewBg,
-  },
-  lineContainer: {
-    width: '100%', 
-    flexDirection: 'row', 
-    justifyContent: 'flex-start', 
-    alignItems: 'center'
-  },
-  textInput: {
-    backgroundColor: 'transparent', 
-    height: 42, 
-    paddingVertical: 0
-  }
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: colors.pViewBg,
+//     paddingHorizontal: 10
+//   },
+//   lineContainer: {
+//     width: '100%', 
+//     flexDirection: 'row', 
+//     justifyContent: 'flex-start', 
+//     alignItems: 'center'
+//   },
+//   textInput: {
+//     backgroundColor: 'transparent', 
+//     height: 42, 
+//     paddingVertical: 0
+//   }
+// });

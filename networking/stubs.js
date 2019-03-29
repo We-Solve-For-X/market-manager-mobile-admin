@@ -87,3 +87,18 @@ export const merchant4 = {
 export const merchantsAwaiting = [merchant1, merchant2]
 
 export const merchantsApproved = [merchant3, merchant4, merchant3, merchant4]
+
+export const market1 = {
+    id: 'UUID',
+    unCode: '030419NA',
+    hostId: 'UUID',
+    name: 'Market Name 1',
+    description: 'A brief description of the market',
+    takeNote: 'This is what the merchants should know r.e. this market instance',
+    setupStart: '2019-04-12T05:00:00.098Z',
+    marketStart: '2019-04-12T07:30:29.098Z',
+    marketEnd: '2019-04-12T15:30:29.098Z',
+    standPrice: 'Float'
+}
+
+export const markets = [market1, market1, market1, market1]
