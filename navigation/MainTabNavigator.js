@@ -106,7 +106,7 @@ const MainTabNav = createMaterialTopTabNavigator({
 
 
 const stackNavConfig = {
-  initialRouteName: 'MarketAdd',
+  //initialRouteName: 'CommunicationView',
   headerMode: 'screen',
   mode: 'card',
   defaultNavigationOptions: {

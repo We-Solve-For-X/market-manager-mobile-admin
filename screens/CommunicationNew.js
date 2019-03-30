@@ -1,43 +1,32 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, ActivityIndicator } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, DropDownMenu, Icon, TextInput } from '@shoutem/ui'
+import axios from 'axios'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
 //API
+import { sendMessage, loadSend } from "../networking/nm_sfx_markMan"
+import { sendMessageError, incompleteFields} from "../services/systemAlerts";
 
 export default class CommunicationNew extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      toOptions: [
-        {
-          date: "All Merchants",
-        },
-        {
-          date: "Market: 01 April",
-        },
-        {
-          date: "Market: 08 April",
-        },
-        {
-          date: "Market: 15 April",
-        },
-        {
-          date: "Market: 22 April",
-        },
-        {
-          date: "Market: 29 April",
-        },
-      ],
+      loading: false,
+      toOptions: [],
+      fromId: null, 
+      fromName: null,
+      sending: false,
       toSelected: null,
-      fromUser: 'Corlia De Beer',
-      topic: '',
-      text: ''
+      topic: null,
+      text: null
     }
+
+    this.signal = axios.CancelToken.source()
   }
   
 
@@ -45,26 +34,26 @@ export default class CommunicationNew extends React.Component {
     this._fetchData()
   }
 
-  // componentWillUnmount() {
-  //   this.signal.cancel('API request canceled due to componentUnmount')
-  // }
+  componentWillUnmount() {
+    this.signal.cancel('API request canceled due to componentUnmount')
+  }
 
   render() {
     const { navigation } = this.props
-    const { toOptions, toSelected, fromUser, topic, text } = this.state
+    const { toOptions, toSelected, fromName, fromId, topic, text, sending, loading } = this.state
     return (
       <View style={styles.container}>
         <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
+
           <View style={styles.lineContainer}>
             <View style={styles.titleBox}>
               <Text>To: </Text>
             </View>
             <DropDownMenu
-              //styleName="horizontal"
               options={toOptions}
               selectedOption={toSelected ? toSelected : toOptions[0]}
               onOptionSelected={(selected) => this.setState({ toSelected: selected })}
-              titleProperty="date"
+              titleProperty="description"
             />
           </View>
           <View style={styles.divider}/>
@@ -75,11 +64,10 @@ export default class CommunicationNew extends React.Component {
             </View>
             <TextInput
               style={styles.textInput}
-              defaultValue={fromUser}
+              defaultValue={fromName}
               editable={false}
             />
           </View>
-
           <View style={styles.divider}/>
 
           <View style={styles.lineContainer}>
@@ -92,26 +80,24 @@ export default class CommunicationNew extends React.Component {
               style={styles.textInput}
               maxLength={28}
               value={topic}
-              //onChangeText={...}
             />
           </View>
-
           <View style={styles.divider}/>
 
           <View style={{width: '100%', flexDirection: 'row', justifyContent: 'flex-end'}}>
-
-          
-
-          <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this._sendMessage(toSelected, fromUser, topic, text)}>
-            <Text>SEND</Text>
-            <Icon name="add-event" />
-          </Button>
-
+            <Button 
+              style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder, width: 115}} 
+              onPress={() => {sending || loading ? null : this._sendMessage(topic, text, fromId, fromName, toSelected)}}>
+              <Text>SEND</Text>
+              {(sending || loading) ? 
+              <ActivityIndicator size="small" color={colors.pBlack} />
+              : 
+              <Icon name="add-event" />
+              }
+            </Button>
           </View>
           
         </View>
-
-        
 
         <View style={{flex: 1, flexDirection: 'row'}}>
           <TextInput
@@ -119,36 +105,52 @@ export default class CommunicationNew extends React.Component {
             style={{height: '100%', flexDirection: 'column', justifyContent: 'flex-start', width: '100%'}}
             onChangeText={(text) => this.setState({text})}
             multiline = {true}
-            //numberOfLines = {2}
             value={text}
-            //onChangeText={...}
           />
         </View>
+
         <ButtonFloat navigation={navigation}/>
       </View>
     )
   }
 
-  _sendMessage = async (to, from, topic, text) => {
-    console.log('sending..', to, text)
+  _sendMessage = async (topic = '', text = '', fromId = '', fromName = '', toSelected = {targetType: "ERROR", targetId: '', description: ''}) => {
+    this.setState({sending: true})
+    if(topic == null || text == null || fromId == null || fromName == null || toSelected == null ) {
+      incompleteFields()
+      this.setState({sending: false})
+      return
+    }
+    
+    let message = {topic: topic, text: text, fromId: fromId, fromName: fromName, target: toSelected.targetType, targetId: toSelected.targetId, targetDesc: toSelected.description}
+    const response = await sendMessage(message, this.signal.token)
+    if (response.code == 200) {
+      this.setState({sending: false})
+      this.props.navigation.goBack()
+    } else {
+      this.setState({sending: false})
+      sendMessageError()
+    }
+    
   }
 
   _fetchData = async () => {
-    console.log("fetching data")
-    // this.setState({ loading: true })
-    // const response = await fetchLocationDetails(spotId, this.signal.token)
-    // if (response.code == 200) {
-    //   this.setState({
-    //     surfSpot: response.data.spot,
-    //     meta: response.data.meta,
-    //     loading: false
-    //   }) 
-    // } else {
-    //   this.setState({
-    //     errorMessage: response.data,
-    //     loading: false
-    //   })
-    // }
+    this.setState({ loading: true })
+    const response = await loadSend('1234', this.signal.token)
+    if (response.code == 200) {
+      this.setState({
+        fromId: 'fromId', 
+        fromName: 'Corlia Bredel',
+        toOptions: response.data,
+        toSelected: response.data[0],
+        loading: false
+      })
+    } else {
+      this.setState({
+        errorMessage: response.data,
+        loading: false
+      })
+    }
   }
 
   static navigationOptions = {

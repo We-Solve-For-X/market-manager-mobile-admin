@@ -17,6 +17,7 @@
     "@expo/samples": "2.1.1",
     "@shoutem/theme": "^0.11.3",
     "@shoutem/ui": "^0.23.18",
+    "axios": "^0.18.0",
     "expo": "^31.0.2",
     "moment": "^2.24.0",
     "react": "16.5.0",

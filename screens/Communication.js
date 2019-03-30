@@ -2,21 +2,25 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
 import { Button, Text, Icon } from '@shoutem/ui'
 import CommunicCard from '../components/communication/CommunicCard'
+import axios from 'axios'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
 //API
-import { messageList } from "../networking/stubs";
+import { messageList } from "../networking/stubs"
+import { adminInbox } from "../networking/nm_sfx_markMan"
 
 export default class Communication extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      messages: [],
+      errorMessage: '',
       loading: true
     }
-    //this.signal = axios.CancelToken.source()
+    this.signal = axios.CancelToken.source()
   }
 
   componentDidMount = () => {
@@ -53,7 +57,7 @@ export default class Communication extends React.Component {
             renderItem={({item}) => this._renderMessage(item)}
             scrollEnabled={false}
             // isLoading={false}
-            //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
+            ListEmptyComponent={<Text>NO CONTENT</Text>}
           />
 
         </ScrollView>
@@ -72,20 +76,22 @@ export default class Communication extends React.Component {
   _fetchData = async () => {
     console.log("fetching data")
     this.setState({messages: messageList})
-    // this.setState({ loading: true })
-    // const response = await fetchLocationDetails(spotId, this.signal.token)
-    // if (response.code == 200) {
-    //   this.setState({
-    //     surfSpot: response.data.spot,
-    //     meta: response.data.meta,
-    //     loading: false
-    //   }) 
-    // } else {
-    //   this.setState({
-    //     errorMessage: response.data,
-    //     loading: false
-    //   })
-    // }
+
+
+    this.setState({ loading: true })
+    const response = await adminInbox('1234', this.signal.token)
+    if (response.code == 200) {
+      this.setState({
+        messages: response.data,
+        loading: false
+      }) 
+    } else {
+      this.setState({
+        errorMessage: response.data,
+        loading: false
+      })
+    }
+
   }
 
   static navigationOptions = {

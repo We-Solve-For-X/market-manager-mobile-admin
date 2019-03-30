@@ -1,0 +1,41 @@
+import { isProd } from '../config/env'
+import axios from 'axios'
+
+const BASE_URL = isProd ? 'https://surf-compass-prod.herokuapp.com' : 'http://localhost:8192'
+const OPENCAGE_URL = 'https://api.opencagedata.com/geocode/v1'
+
+export function get(path, token) {
+  //console.log('url', `${BASE_URL}/${path}`)
+  return axios.get(`${BASE_URL}/${path}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json, text/plain, */*'
+    },
+    timeout: 9000,
+    cancelToken: token
+  })
+}
+
+export function post(path, body, token) {
+  console.log('[POST] ', `${BASE_URL}/${path}`)
+  console.log('[POST] ', body)
+  return axios.post(`${BASE_URL}/${path}`, body, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json, text/plain, */*',
+    },
+    timeout: 9000,
+    cancelToken: token,
+  })
+}
+
+export function getOc(path, token) {
+  console.log('url', `${OPENCAGE_URL}/${path}`)
+  return axios.get(`${OPENCAGE_URL}/${path}`, {
+    method: 'GET',
+    timeout: 2000,
+    cancelToken: token
+  })
+}
