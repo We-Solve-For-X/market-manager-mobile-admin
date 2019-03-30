@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
 import { Button, Text, Icon } from '@shoutem/ui'
 import CommunicCard from '../components/communication/CommunicCard'
 import axios from 'axios'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
@@ -47,8 +48,8 @@ export default class Communication extends React.Component {
         <ScrollView>
 
           <Button style={{marginVertical: 18, marginHorizontal: 45, ...styleConsts.buttonBorder}} onPress={() => this.props.navigation.navigate('CommunicationNew')}>
-            <Icon name="email" />
             <Text>NEW MESSAGE</Text>
+            <MaterialCommunityIcons name="email-plus-outline" size={22} />
           </Button>
 
           <FlatList

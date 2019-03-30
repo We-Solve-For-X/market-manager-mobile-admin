@@ -2,4 +2,4 @@ export const isProd = false //This boolean is set to transition the API between 
 
 export const MARKMAN_BASE_URL = `v1/markMan`
 
-export HostID = 'uuid12345'
+export const HostID = 'uuid12345'

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, DropDownMenu, Icon, TextInput } from '@shoutem/ui'
+import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
 //import axios from 'axios'
 //consts & comps
@@ -92,7 +93,7 @@ export default class CommunicationNew extends React.Component {
               {(sending || loading) ? 
               <ActivityIndicator size="small" color={colors.pBlack} />
               : 
-              <Icon name="add-event" />
+              <Ionicons name="ios-send" size={22} />
               }
             </Button>
           </View>

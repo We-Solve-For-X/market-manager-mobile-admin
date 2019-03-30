@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
 import { Button, Text, Icon } from '@shoutem/ui'
+import { FontAwesome } from '@expo/vector-icons';
 //import axios from 'axios'
 //consts & comps
 import MarketCard from '../components/markets/MarketCard'
@@ -35,9 +36,9 @@ export default class Markets extends React.Component {
       <View style={styles.container}>
       <ScrollView>
 
-        <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.props.navigation.navigate('MarketAdd')}>
-          <Icon name="add-event" />
+        <Button style={{marginVertical: 18, marginHorizontal: 45, ...styleConsts.buttonBorder}} onPress={() => this.props.navigation.navigate('MarketAdd')}>
           <Text>CREATE NEW MARKET</Text>
+          <FontAwesome size={22} name="calendar-plus-o" /> 
         </Button>
 
         <FlatList

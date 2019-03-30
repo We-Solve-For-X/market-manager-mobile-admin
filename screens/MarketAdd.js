@@ -5,6 +5,7 @@ import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
 import DatePicker from 'react-native-datepicker'
 import SearchBar from '../components/common/SearchBar'
 import AttendanceCard from '../components/markets/AttendanceCard'
+import { AntDesign } from '@expo/vector-icons'
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
@@ -51,28 +52,31 @@ export default class MarketAdd extends React.Component {
 
         <View style={{width: '100%', flexDirection: 'row', justifyContent: 'flex-end'}}>
 
+          
+
+          </View>
+
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
+          <Title style={{color: colors.pWhite}}>Market Information</Title>
+
           { verifySubmit ? 
           (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifySubmit: true})}>
+            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifySubmit: true})}>
               <Text>CONFIRM</Text>
-              <Icon name="add-event" />
+              <AntDesign name="check" size={22} />
             </Button>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifySubmit: false})}>
+            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifySubmit: false})}>
               <Text>CANCELL</Text>
-              <Icon name="add-event" />
+              <AntDesign name="close" size={22} />
             </Button>
           </View>)
           : (<View>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifySubmit: true})}>
+            <Button style={{marginHorizontal: 10, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifySubmit: true})}>
               <Text>CREATE</Text>
               <Icon name="plus-button" />
             </Button>
           </View>) }
 
-          </View>
-
-        <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
-          <Title style={{color: colors.pWhite}}>Market Information</Title>
         </View>
         
         <View style={styles.lineContainer}>
@@ -113,7 +117,7 @@ export default class MarketAdd extends React.Component {
               style={{width: 200,  padding: 0, margin: 0, flexDirection: 'column', justifyContent: 'center'}}
               date={setupStart}
               mode="datetime"
-              placeholder="select a date"
+              placeholder="--select a date--"
               format="MMM Do YYYY, h:mm a"
               minDate="2019-03-01"
               maxDate="2025-12-01"
@@ -144,7 +148,7 @@ export default class MarketAdd extends React.Component {
               style={{width: 200,  padding: 0, margin: 0, flexDirection: 'column', justifyContent: 'center'}}
               date={marketStart}
               mode="datetime"
-              placeholder="select a date"
+              placeholder="--select a date--"
               format="MMM Do YYYY, h:mm a"
               minDate="2019-03-01"
               maxDate="2025-12-01"
@@ -174,7 +178,7 @@ export default class MarketAdd extends React.Component {
               style={{width: 200,  paddingHorizontal: 0, marginHorizontal: 0}}
               date={marketEnd}
               mode="datetime"
-              placeholder="select a date"
+              placeholder="--select a date--"
               format="MMM Do YYYY, h:mm a"
               minDate="2019-03-01"
               maxDate="2025-12-01"
@@ -212,7 +216,7 @@ export default class MarketAdd extends React.Component {
 
           <View style={[styles.divider, {marginBottom: 8}]}/>
 
-          <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
+          <View style={{flexDirection: 'row', justifyContent: 'center', height: 55, backgroundColor: colors.primary, width: '100%', padding: 10}}>
             <Title style={{color: colors.pWhite}}>Attendances</Title>
           </View>
 

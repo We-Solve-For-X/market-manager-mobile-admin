@@ -30,19 +30,19 @@ export default class MarketCard extends React.PureComponent {
 
         <View style={styles.divider}/>
 
-        <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%'}}>
-          <Text style={styles.from} numberOfLines={1}>{'Merchants Participating: 163'}</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%', marginBottom: 3}}>
+          <Text style={styles.from} numberOfLines={1}>{'Merchants: 163'}</Text>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%'}}>
-          <Text style={styles.from} numberOfLines={1}>{'Payments received: '}</Text>
-          <Text style={styles.paidY} numberOfLines={1}>{'121 : '}</Text>
-          <Text style={styles.paidN} numberOfLines={1}>{'42'}</Text>
+          <Text style={styles.from} numberOfLines={1}>{'Payments: '}</Text>
+          <Text style={styles.paidY} numberOfLines={1}>{'121 '}</Text>
+          <Text style={styles.paidN} numberOfLines={1}>{'(42)'}</Text>
         </View>
 
         <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%'}}>
           <Subtitle style={styles.from} numberOfLines={1}>{name}</Subtitle>
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%', marginBottom: 4}}>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%', marginBottom: 4, marginTop: 5}}>
           <Text style={styles.text} numberOfLines={2}>{description}</Text>
         </View>
       </TouchableOpacity>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
       borderRadius: 3
     },
     topic: {
-      fontSize: 17,
+      fontSize: 18,
       fontWeight: 'bold',
       color: colors.pWhite
     },
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
       color: colors.pWhite
     }, 
     from: {
-      fontSize: 13,
+      fontSize: 15,
       //fontWeight: 'bold',
       color: colors.pWhite
     }, 

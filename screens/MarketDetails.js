@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, ScrollView } from 'react-native'
+import { View, StyleSheet, FlatList, ScrollView, Modal } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
 import DatePicker from 'react-native-datepicker'
 import SearchBar from '../components/common/SearchBar'
 import AttendanceCard from '../components/markets/AttendanceCard'
+import AttendanceAddCard from '../components/markets/AttendanceAddCard'
+import { Feather, MaterialCommunityIcons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 //import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
@@ -19,8 +21,9 @@ export default class MarketDetails extends React.Component {
     this.state = {
       merchants: [],
       merchantsDisp: [],
-
-
+      newMerchants: [],
+      confirmDelete: false,
+      addModal: false,
       searchInput: ''
     }
   }
@@ -36,15 +39,72 @@ export default class MarketDetails extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, merchantsDisp } = this.state
+    const { confirmDelete, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, merchantsDisp, addModal, newMerchants } = this.state
 
     return (
       <View style={styles.container}>
+      <Modal
+          animationType="fade"
+          transparent={true}
+          visible={addModal}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+          }}>
+          <View style={{flex: 1, padding: 80, backgroundColor: colors.pBlackTransp, flexDirection: 'column', justifyContent: 'flex-start'}}>
+          <View style={{backgroundColor: colors.pGrey, padding: 15, width: '100%', height: '100%'}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
+            <Title style={{color: colors.pWhite}}>Add Merchants</Title>
+            <Button onPress={() => {this.setState({addModal: false})}}>
+              <Text>Done</Text>
+              <MaterialIcons name={'done'} size={22}/>
+            </Button>
+          </View>
+          <ScrollView>
+          <SearchBar
+            placeholder={'Find a Merchant'} 
+            onChangeText={ (searchInput) => this._applySearch(searchInput)}
+            value={searchInput}
+          />
+          <FlatList
+            data={newMerchants}
+            //keyExtractor={(item) => item.spotSummary.spotId}
+            renderItem={({item}) => this._renderAddAttendance(item)}
+            scrollEnabled={false}
+            removeClippedSubviews={true}
+            initialNumToRender={30}
+            // isLoading={false}
+            //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
+          />
+          </ScrollView>
+              
+          </View>
+          </View>
+        </Modal>
+
+
+
       <ScrollView>
         <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
 
-        <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
           <Title style={{color: colors.pWhite}}>Market Information</Title>
+          { confirmDelete ? 
+          (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({confirmDelete: true})}>
+              <Text>CONFIRM</Text>
+              <AntDesign name="check" size={22} />
+            </Button>
+            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({confirmDelete: false})}>
+              <Text>CANCELL</Text>
+              <AntDesign name="close" size={22} />
+            </Button>
+          </View>)
+          : (<View>
+            <Button style={{ marginHorizontal: 15, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.setState({confirmDelete: true})}>
+              <Text>DELETE</Text>
+              <MaterialCommunityIcons name="delete-outline" size={25} color={colors.pBlack} />
+            </Button>
+          </View>) }
         </View>
         
         <View style={styles.lineContainer}>
@@ -169,9 +229,16 @@ export default class MarketDetails extends React.Component {
 
           <View style={[styles.divider, {marginBottom: 8}]}/>
 
-          <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',  backgroundColor: colors.primary, width: '100%', padding: 10}}>
             <Title style={{color: colors.pWhite}}>Attendances</Title>
+            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({addModal: true})}>
+              <Text>ADD</Text>
+              <Feather name="user-plus" size={22}/>
+            </Button>
           </View>
+
+          </View>
+          <View>
 
           </View>
           <SearchBar
@@ -204,6 +271,13 @@ export default class MarketDetails extends React.Component {
       )
   }
 
+  _renderAddAttendance = () => {
+    const navigation = this.props.navigation
+    return (
+      <AttendanceAddCard isCreate={false}/>
+      )
+  }
+
   _applySearch = (searchInput) => {
     this.setState({searchInput})
     const { merchants } = this.state
@@ -218,7 +292,7 @@ export default class MarketDetails extends React.Component {
 
   _fetchData = async () => {
     console.log("fetching data")
-    this.setState({merchants: merchantsApproved, merchantsDisp: merchantsApproved})
+    this.setState({merchants: merchantsApproved, merchantsDisp: merchantsApproved, newMerchants: merchantsApproved})
     // this.setState({ loading: true })
     // const response = await fetchLocationDetails(spotId, this.signal.token)
     // if (response.code == 200) {
