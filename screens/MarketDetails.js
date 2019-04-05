@@ -269,10 +269,10 @@ export default class MarketDetails extends React.Component {
     )
   }
 
-  _renderAttendance = () => {
-    const navigation = this.props.navigation
+  _renderAttendance = (attendance = {}) => {
+    //const navigation = this.props.navigation
     return (
-      <AttendanceCard isCreate={false}/>
+      <AttendanceCard isCreate={false} attendance={attendance}/>
       )
   }
 

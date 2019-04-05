@@ -21,23 +21,23 @@ export default class AttendanceCard extends React.PureComponent {
 
 
   render() {
-    const { navigation, merchant, isCreate } = this.props
+    const { navigation, attendance, isCreate } = this.props
     const { isExpanded, dummyIsActive } = this.state
-    const { id, isActive, repName, repSurname, name, description, standId} = merchant
+    const { id, standId, merchant, invoice} = attendance
 
     const { } = this.state
     return (
       <View style={styles.container}>
         <View style={styles.topBox} onPress={() => this.setState({isExpanded: !isExpanded})}>
           <View style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'}} >
-            <Text style={styles.textMain}>{name}</Text>
-            <Text style={styles.textSub}>{repName} {repSurname}</Text>
+            <Text style={styles.textMain}>{merchant.name}</Text>
+            <Text style={styles.textSub}>{merchant.repName} {merchant.repSurname}</Text>
             <Text style={styles.textSub}>{' 4 - R230 (Payment Bracket)'}</Text>
             {isCreate ? 
             null
             :
             <View>
-              <Text style={styles.textSub}>{'PENDING (Payment Status)'}</Text>
+              <Text style={styles.textSub}>{`R${invoice.amount} - ${invoice.status}`}</Text>
               <Text style={styles.textSub}>{'MREP120409 (Payment Ref)'}</Text>
             </View>}
           </View>
@@ -55,14 +55,14 @@ export default class AttendanceCard extends React.PureComponent {
         null:
         (<View style={{width: '100%', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingVertical: 4, backgroundColor: colors.primary, borderBottomLeftRadius: 3, borderBottomRightRadius: 3}}>
           {/* <View style={styles.divider}/> */}
-          {this._renderExpand(isCreate, id)}
+          {this._renderExpand(isCreate, id, merchant.id)}
         </View>)
         }
       </View>
     )
   }
 
-  _renderExpand = (isCreate, id) => {
+  _renderExpand = (isCreate = false, attId = '', merchId = '') => {
     if(isCreate){
       return(
         <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '95%'}}>
@@ -78,7 +78,7 @@ export default class AttendanceCard extends React.PureComponent {
             </Button>
           </View>)
           : (<View>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.props.removeAttendance(id)}>
+            <Button style={{marginVertical: 10, marginHorizontal: 15, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.props.removeAttendance(merchId)}>
               <Text>REMOVE</Text>
               <Icon name="plus-button" />
             </Button>

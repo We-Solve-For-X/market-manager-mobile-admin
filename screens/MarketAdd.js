@@ -21,8 +21,8 @@ export default class MarketAdd extends React.Component {
     super(props);
     this.state = {
       loading: false,
-      merchants: [],
-      merchantsDisp: [],
+      attendances: [],
+      attendancesDisp: [],
       verifySubmit: false,
       name: null, 
       description: null, 
@@ -48,7 +48,7 @@ export default class MarketAdd extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, merchantsDisp, loading } = this.state
+    const { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, attendancesDisp, loading } = this.state
     return (
       <View style={styles.container}>
       <ScrollView>
@@ -209,7 +209,7 @@ export default class MarketAdd extends React.Component {
               <Text>Take Note: </Text>
             </View>
             <TextInput
-              placeholder={'Information that will be usefull to the merchants'}
+              placeholder={'Information that will be usefull to the attendances'}
               onChangeText={(takeNote) => this.setState({takeNote})}
               style={styles.textInput}
               //numberOfLines={4}
@@ -232,7 +232,7 @@ export default class MarketAdd extends React.Component {
           />
 
           <FlatList
-            data={merchantsDisp}
+            data={attendancesDisp}
             //keyExtractor={(item) => item.spotSummary.spotId}
             renderItem={({item}) => this._renderAttendance(item)}
             scrollEnabled={false}
@@ -248,19 +248,19 @@ export default class MarketAdd extends React.Component {
     )
   }
 
-  _renderAttendance = (merchant = {}) => {
+  _renderAttendance = (attendance = {}) => {
     return (
-      <AttendanceCard isCreate={true} merchant={merchant} removeAttendance={this._removeAttendance}/>
+      <AttendanceCard isCreate={true} attendance={attendance} removeAttendance={this._removeAttendance}/>
       )
   }
 
   _createMarket = async () => {
     this.setState({ loading: true })
-    const { merchants, name, takeNote, description, setupStart, marketStart, marketEnd } = this.state
-    let merchsIn = merchants.map((val, ind) => {
-      return val.id
+    const { attendances, name, takeNote, description, setupStart, marketStart, marketEnd } = this.state
+    let merchsIn = attendances.map((val, ind) => {
+      return val.merchant.id
     })
-    if(merchants == null || name == null || takeNote == null || description == null || setupStart == null || marketStart == null || marketEnd == null){
+    if(attendances == null || name == null || takeNote == null || description == null || setupStart == null || marketStart == null || marketEnd == null){
       console.log('complete all fields')
       this.setState({
         errorMessage: 'please complete all required fields',
@@ -295,23 +295,22 @@ export default class MarketAdd extends React.Component {
 
   _applySearch = (searchInput) => {
     this.setState({searchInput})
-    const { merchants } = this.state
+    const { attendances } = this.state
     const query = searchInput.toLowerCase().replace(" ", "")
-    const merchantsDisp = merchants.filter(item => {
+    const attendancesDisp = attendances.filter(item => {
       const standName = item.name.toLowerCase().replace(" ", "")
       return standName.includes(query)
      })
-     this.setState({merchantsDisp})
+     this.setState({attendancesDisp})
   }
 
   _removeAttendance = (id = '') => {
     console.log('removing..')
-    let cMerchants = this.state.merchants
-    let merchants = cMerchants.filter(function(merch, index, arr){
-      return merch.id != id
+    let cAttendances = this.state.attendances
+    let attendances = cAttendances.filter(function(att, index, arr){
+      return att.merchant.id != id
     })
-    console.log('merchants..', merchants)
-    this.setState({merchantsDisp: merchants, merchants})
+    this.setState({attendancesDisp: attendances, attendances})
   }
 
   _fetchData = async () => {
@@ -320,8 +319,8 @@ export default class MarketAdd extends React.Component {
     const response = await loadCreate(HostID, this.signal.token)
     if (response.code == 200) {
       this.setState({
-        merchants: response.data.merchants,
-        merchantsDisp: response.data.merchants,
+        attendances: response.data.attendances,
+        attendancesDisp: response.data.attendances,
         loading: false
       }) 
     } else {
