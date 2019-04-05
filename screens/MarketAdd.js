@@ -6,13 +6,14 @@ import DatePicker from 'react-native-datepicker'
 import SearchBar from '../components/common/SearchBar'
 import AttendanceCard from '../components/markets/AttendanceCard'
 import { AntDesign } from '@expo/vector-icons'
-//import axios from 'axios'
+import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
+import { HostID } from "../config/env"
 //API
-import { merchantsApproved } from "../networking/stubs";
+import { loadCreate, createMarket } from "../networking/nm_sfx_markets";
 
 export default class MarketAdd extends React.Component {
   constructor(props){
@@ -30,6 +31,8 @@ export default class MarketAdd extends React.Component {
 
       searchInput: ''
     }
+
+    this.signal = axios.CancelToken.source()
   }
   
 
@@ -44,7 +47,6 @@ export default class MarketAdd extends React.Component {
   render() {
     const { navigation } = this.props
     const { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, merchantsDisp } = this.state
-    console.log('merchantsDisp', merchantsDisp)
     return (
       <View style={styles.container}>
       <ScrollView>
@@ -61,7 +63,7 @@ export default class MarketAdd extends React.Component {
 
           { verifySubmit ? 
           (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifySubmit: true})}>
+            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this._createMarket()}>
               <Text>CONFIRM</Text>
               <AntDesign name="check" size={22} />
             </Button>
@@ -244,11 +246,49 @@ export default class MarketAdd extends React.Component {
     )
   }
 
-  _renderAttendance = () => {
-    const navigation = this.props.navigation
+  _renderAttendance = (merchant = {}) => {
     return (
-      <AttendanceCard isCreate={true}/>
+      <AttendanceCard isCreate={true} merchant={merchant} removeAttendance={this._removeAttendance}/>
       )
+  }
+
+  _createMarket = async () => {
+    this.setState({ loading: true })
+    const { merchants, name, takeNote, description, setupStart, marketStart, marketEnd } = this.state
+    let merchsIn = merchants.map((val, ind) => {
+      return val.id
+    })
+    if(merchants == null || name == null || takeNote == null || description == null || setupStart == null || marketStart == null || marketEnd == null){
+      console.log('complete all fields')
+      this.setState({
+        errorMessage: 'please complete all required fields',
+        verifySubmit: false,
+        loading: false
+      })
+      return
+    }
+    const createBody = {
+      hostId: HostID,
+      name: name,
+      description: description,
+      takeNote: takeNote,
+      merchantIds: merchsIn,
+      setupStart: setupStart,
+      marketStart: marketStart,
+      marketEnd: marketEnd
+    }
+    console.log('createBody', createBody)
+    const response = await createMarket(createBody, this.signal.token)
+    if (response.code == 200) {
+      await this.setState({ loading: false, verifySubmit: false }) 
+      this.props.navigation.goBack()
+    } else {
+      this.setState({
+        errorMessage: response.data,
+        verifySubmit: false,
+        loading: false
+      })
+    }
   }
 
   _applySearch = (searchInput) => {
@@ -256,30 +296,38 @@ export default class MarketAdd extends React.Component {
     const { merchants } = this.state
     const query = searchInput.toLowerCase().replace(" ", "")
     const merchantsDisp = merchants.filter(item => {
-      const standName = item.standName.toLowerCase().replace(" ", "")
+      const standName = item.name.toLowerCase().replace(" ", "")
       return standName.includes(query)
      })
-
      this.setState({merchantsDisp})
+  }
+
+  _removeAttendance = (id = '') => {
+    console.log('removing..')
+    let cMerchants = this.state.merchants
+    let merchants = cMerchants.filter(function(merch, index, arr){
+      return merch.id != id
+    })
+    console.log('merchants..', merchants)
+    this.setState({merchantsDisp: merchants, merchants})
   }
 
   _fetchData = async () => {
     console.log("fetching data")
-    this.setState({merchants: merchantsApproved, merchantsDisp: merchantsApproved})
-    // this.setState({ loading: true })
-    // const response = await fetchLocationDetails(spotId, this.signal.token)
-    // if (response.code == 200) {
-    //   this.setState({
-    //     surfSpot: response.data.spot,
-    //     meta: response.data.meta,
-    //     loading: false
-    //   }) 
-    // } else {
-    //   this.setState({
-    //     errorMessage: response.data,
-    //     loading: false
-    //   })
-    // }
+    this.setState({ loading: true })
+    const response = await loadCreate(HostID, this.signal.token)
+    if (response.code == 200) {
+      this.setState({
+        merchants: response.data.merchants,
+        merchantsDisp: response.data.merchants,
+        loading: false
+      }) 
+    } else {
+      this.setState({
+        errorMessage: response.data,
+        loading: false
+      })
+    }
   }
 
   static navigationOptions = {

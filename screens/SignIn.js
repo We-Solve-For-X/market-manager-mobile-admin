@@ -110,7 +110,7 @@ class SignIn extends React.Component {
 
   _signInAsync = async () => {
     this.setState({ signingIn: true, errorMessage: null })
-    let AuthIn = {username: this.state.email, password: this.state.password}
+    let AuthIn = {userType: 'Administrator', username: this.state.email, password: this.state.password}
     
     const response = await signinAdmin(AuthIn, this.signal.token)
     if (response.code == 200) {

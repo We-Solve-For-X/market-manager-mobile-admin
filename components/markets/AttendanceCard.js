@@ -22,16 +22,16 @@ export default class AttendanceCard extends React.PureComponent {
 
   render() {
     const { navigation, merchant, isCreate } = this.props
-     const { isExpanded, dummyIsActive } = this.state
-    // const { id, hostId, authId, status, isActive, name, surname, email, cell, standName, businessName, standDescription} = merchant
+    const { isExpanded, dummyIsActive } = this.state
+    const { id, isActive, repName, repSurname, name, description, standId} = merchant
 
     const { } = this.state
     return (
       <View style={styles.container}>
         <View style={styles.topBox} onPress={() => this.setState({isExpanded: !isExpanded})}>
           <View style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'}} >
-            <Text style={styles.textMain}>{'standName'}</Text>
-            <Text style={styles.textSub}>{'rep name'} {'surname'}</Text>
+            <Text style={styles.textMain}>{name}</Text>
+            <Text style={styles.textSub}>{repName} {repSurname}</Text>
             <Text style={styles.textSub}>{' 4 - R230 (Payment Bracket)'}</Text>
             {isCreate ? 
             null
@@ -55,14 +55,14 @@ export default class AttendanceCard extends React.PureComponent {
         null:
         (<View style={{width: '100%', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingVertical: 4, backgroundColor: colors.primary, borderBottomLeftRadius: 3, borderBottomRightRadius: 3}}>
           {/* <View style={styles.divider}/> */}
-          {this._renderExpand(isCreate, dummyIsActive)}
+          {this._renderExpand(isCreate, id)}
         </View>)
         }
       </View>
     )
   }
 
-  _renderExpand = (isCreate, isActive) => {
+  _renderExpand = (isCreate, id) => {
     if(isCreate){
       return(
         <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '95%'}}>
@@ -78,7 +78,7 @@ export default class AttendanceCard extends React.PureComponent {
             </Button>
           </View>)
           : (<View>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifyDelete: true})}>
+            <Button style={{marginVertical: 10, marginHorizontal: 15, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.props.removeAttendance(id)}>
               <Text>REMOVE</Text>
               <Icon name="plus-button" />
             </Button>

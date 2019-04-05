@@ -5,7 +5,6 @@ export async function packageResponse(nwRequest) {
 
     try{
         const input = await nwRequest
-        console.log('input', input)
         const { code } = input.data
         packagedResp = processResponseCode(code, input)
     } catch (err) { //Catch request failure errors

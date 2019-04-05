@@ -85,7 +85,7 @@ CommunicationStack.navigationOptions = {
 }
 
 const PrimaryNavConfig = {
-  initialRouteName: 'MerchantsStack',
+  initialRouteName: 'MarketsStack',
   lazy: 'true',
   tabBarOptions:{
       indicatorStyle:{

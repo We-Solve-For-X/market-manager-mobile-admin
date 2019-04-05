@@ -74,3 +74,22 @@ export async function asSetProfile(profile = {}, username = ''){
     res = await asMultiSet([uname, name, surname, email, role])
     return res
 }
+
+// export async function asGetProfile(profile = {}, username = ''){
+//   console.log(profile)
+//   let name = await asGet(ProfileCnsts.name)
+//   let surname = await asGet(ProfileCnsts.surname)
+//   let email = await asGet(ProfileCnsts.email)
+//   let role = await asGet(ProfileCnsts.role)
+//   let username = await asGet(ProfileCnsts.username)
+
+//   profile = {
+//     username = username,
+//     name = name,
+//     surname = surname,
+//     email = email,
+//     role = role
+//   }
+
+//   return profile
+// }

@@ -2,22 +2,26 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
 import { Button, Text, Icon } from '@shoutem/ui'
 import { FontAwesome } from '@expo/vector-icons';
-//import axios from 'axios'
+import axios from 'axios'
 //consts & comps
 import MarketCard from '../components/markets/MarketCard'
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
+import { HostID } from "../config/env";
 //API
-import { markets } from "../networking/stubs";
+import { load } from "../networking/nm_sfx_markets";
 
 export default class Markets extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      loading: true
+      nFuture: 0,
+      nPast: 0,
+      loading: true,
+      markets: []
     }
-    //this.signal = axios.CancelToken.source()
+    this.signal = axios.CancelToken.source()
   }
 
   componentDidMount = () => {
@@ -30,7 +34,7 @@ export default class Markets extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { } = this.state
+    const { markets, loading, nFuture, nPast } = this.state
     
     return (
       <View style={styles.container}>
@@ -65,20 +69,22 @@ export default class Markets extends React.Component {
 
   _fetchData = async () => {
     console.log("fetching data")
-    // this.setState({ loading: true })
-    // const response = await fetchLocationDetails(spotId, this.signal.token)
-    // if (response.code == 200) {
-    //   this.setState({
-    //     surfSpot: response.data.spot,
-    //     meta: response.data.meta,
-    //     loading: false
-    //   }) 
-    // } else {
-    //   this.setState({
-    //     errorMessage: response.data,
-    //     loading: false
-    //   })
-    // }
+    this.setState({ loading: true })
+    const response = await load(HostID, this.signal.token)
+    console.log(response)
+    if (response.code == 200) {
+      this.setState({
+        nFuture: response.data.nFuture,
+        nPast: response.data.nPast, 
+        markets: response.data.markets,
+        loading: false
+      }) 
+    } else {
+      this.setState({
+        errorMessage: response.data,
+        loading: false
+      })
+    }
   }
 
   static navigationOptions = {
