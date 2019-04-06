@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, ScrollView, Modal } from 'react-native'
+import { View, StyleSheet, FlatList, ScrollView, Modal, ActivityIndicator } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
 import DatePicker from 'react-native-datepicker'
@@ -15,7 +15,7 @@ import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
 import { HostID } from "../config/env"
 //API
-import { view, loadAdd } from "../networking/nm_sfx_markets"
+import { view, loadAdd, deleteMarket } from "../networking/nm_sfx_markets"
 
 export default class MarketDetails extends React.Component {
   constructor(props){
@@ -26,6 +26,7 @@ export default class MarketDetails extends React.Component {
 
       newAttendances: [],
       confirmDelete: false,
+      deleting: false,
       addModal: false,
       searchInput: ''
     }
@@ -44,7 +45,7 @@ export default class MarketDetails extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { confirmDelete, market, searchInput, addModal, attendances, newAttendances } = this.state
+    const { confirmDelete, market, searchInput, addModal, attendances, newAttendances, deleting } = this.state
     const { id, unCode, name, description, takeNote, setupStart, marketStart, marketEnd, standPrices, nAttendances, nInvPayed, nInvOuts, nInvSubm  } = market
 
     return (
@@ -97,11 +98,11 @@ export default class MarketDetails extends React.Component {
           <Title style={{color: colors.pWhite}}>Market Information</Title>
           { confirmDelete ? 
           (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({confirmDelete: true})}>
+            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => deleting ? null : this._deleteMarket()}>
               <Text>CONFIRM</Text>
-              <AntDesign name="check" size={22} />
+              {deleting ? <ActivityIndicator/> : <AntDesign name="check" size={22} />}
             </Button>
-            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({confirmDelete: false})}>
+            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => deleting ? null : this.setState({confirmDelete: false})}>
               <Text>CANCELL</Text>
               <AntDesign name="close" size={22} />
             </Button>
@@ -273,7 +274,7 @@ export default class MarketDetails extends React.Component {
   _renderAttendance = (attendance = {}) => {
     //const navigation = this.props.navigation
     return (
-      <AttendanceCard isCreate={false} attendance={attendance}/>
+      <AttendanceCard isCreate={false} attendance={attendance} updateParent={this._fetchData}/>
       )
   }
 
@@ -320,8 +321,21 @@ export default class MarketDetails extends React.Component {
      this.setState({merchantsDisp})
   }
 
+  _deleteMarket = async () => {
+    let id = this.state.id
+    this.setState({ deleting: true })
+    const response = await deleteMarket(id, this.signal.token)
+    if (response.code == 200) {
+      this.props.navigation.goBack()
+    } else {
+      await this.setState({
+        errorMessage: response.data,
+        deleting: false
+      })
+    }
+  }
+
   _removeNewAttendance = (id = '') => {
-    console.log('removing..')
     let cAttendances = this.state.newAttendances
     let newAttendances = cAttendances.filter(function(att, index, arr){
       return att.merchant.id != id

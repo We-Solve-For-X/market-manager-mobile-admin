@@ -20,10 +20,14 @@ export async function createMarket(marketCreate = {}, token) {
     return packageResponse(packDataPromise)
 }
 
-// ???
-export async function confirmPayment(invoiceUpdate = {}, token) {
+// case class Update(invoiceId: String,
+//                 refNum: String,
+//                 statusTo: String,
+//                 method: String,
+//                 comment: Option[String])
+export async function updatePayment(invoiceUpdate = {}, token) {
     //Will be changed to a post soon
-    const url =  MARKMAN_BASE_URL + `/${MID_URL}/confirmPayment`
+    const url =  MARKMAN_BASE_URL + `/${MID_URL}/updatePayment`
     const packDataPromise = post(url, invoiceUpdate, token)
     
     return packageResponse(packDataPromise)
@@ -124,6 +128,20 @@ export async function loadAdd(hostId = '', marketId = '', token) {
 // Boolean
 export async function addMerchant(marketId = '', merchantId = '', token) {
     const url =  MARKMAN_BASE_URL + `/${MID_URL}/addMerchant?marketId=${marketId}&merchantId=${merchantId}`
+    const packDataPromise = get(url, token)
+
+    return packageResponse(packDataPromise)
+}
+
+export async function deleteMarket(marketId = '', token) {
+    const url =  MARKMAN_BASE_URL + `/${MID_URL}/delete?marketId=${marketId}`
+    const packDataPromise = get(url, token)
+
+    return packageResponse(packDataPromise)
+}
+
+export async function removeAttendance(attendanceId = '', token) {
+    const url =  MARKMAN_BASE_URL + `/${MID_URL}/removeAttendance?attendanceId=${attendanceId}`
     const packDataPromise = get(url, token)
 
     return packageResponse(packDataPromise)

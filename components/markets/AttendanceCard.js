@@ -1,28 +1,32 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Switch } from 'react-native'
 import {  Text, Icon, Button, TextInput } from '@shoutem/ui'
-import styleConsts from "../../constants/styleConsts";
-import colors from '../../constants/colors';
+import axios from 'axios'
+import styleConsts from "../../constants/styleConsts"
+import colors from '../../constants/colors'
+import { removeAttendance } from "../../networking/nm_sfx_markets"
 
 export default class AttendanceCard extends React.PureComponent {
     constructor(props) {
         super(props)
         this.state = {
           isExpanded: false,
-          dummyIsActive: true,
-          verifyDelete: false,
+          verifyRemove: false,
+          removing: false,
+          updating: false,
 
           paymentMethod: null,
           confirmPayment: false,
           paymentComment: ''
         }
-        //this.signal = axios.CancelToken.source()
+        
+        this.signal = axios.CancelToken.source()
     }
 
 
   render() {
     const { navigation, attendance, isCreate } = this.props
-    const { isExpanded, dummyIsActive } = this.state
+    const { isExpanded, removing} = this.state
     const { id, standId, merchant, invoice} = attendance
 
     const { } = this.state
@@ -66,13 +70,13 @@ export default class AttendanceCard extends React.PureComponent {
     if(isCreate){
       return(
         <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '95%'}}>
-          { this.state.verifyDelete ? 
+          { this.state.verifyRemove ? 
           (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifyDelete: false})}>
+            <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifyRemove: false})}>
               <Text>CONFIRM</Text>
               <Icon name="add-event" />
             </Button>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifyDelete: false})}>
+            <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifyRemove: false})}>
               <Text>CANCELL</Text>
               <Icon name="add-event" />
             </Button>
@@ -131,18 +135,18 @@ export default class AttendanceCard extends React.PureComponent {
         <View style={{height: 1, width: '96%', backgroundColor: colors.pWhite}}/>
 
         <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '99%'}}>
-          { this.state.verifyDelete ? 
+          { this.state.verifyRemove ? 
           (
           <View style={{flexDirection: 'row', justifyContent: 'center'}}>
             <Button 
               style={{marginVertical: 5, marginHorizontal: 15, ...styleConsts.buttonBorder}} 
-              onPress={() => this.setState({verifyDelete: false})}>
+              onPress={() => this._removeAttendance()}>
               <Text>CONFIRM</Text>
               <Icon name="add-event" />
             </Button>
             <Button 
               style={{marginVertical: 5, marginHorizontal: 15, ...styleConsts.buttonBorder}} 
-              onPress={() => this.setState({verifyDelete: false})}>
+              onPress={() => this.setState({verifyRemove: false})}>
               <Text>CANCELL</Text>
               <Icon name="add-event" />
             </Button>
@@ -151,7 +155,7 @@ export default class AttendanceCard extends React.PureComponent {
           <View>
             <Button 
               style={{marginVertical: 5, marginHorizontal: 15, borderColor: colors.secondary, backgroundColor: colors.pRed , ...styleConsts.buttonBorder}} 
-              onPress={() => this.setState({verifyDelete: true})}>
+              onPress={() => this.setState({verifyRemove: true})}>
               <Text>REMOVE</Text>
               <Icon name="plus-button" />
             </Button>
@@ -164,9 +168,41 @@ export default class AttendanceCard extends React.PureComponent {
     }
   }
 
-  _toggleMerchant = async () => {
-    this.setState({dummyIsActive: !this.state.dummyIsActive})
+ 
+  _removeAttendance = async () => {
+    this.setState({ removing: true })
+    const idIn = this.props.attendance.id
+    const response = await removeAttendance(idIn, this.signal.token)
+    if (response.code == 200) {
+      this.setState({
+        removing: false
+      }) 
+      this.props.updateParent()
+    } else {
+      this.setState({
+        errorMessage: response.data,
+        removing: false
+      })
+    }
   }
+
+  _updatePayment = async () => {
+    this.setState({ updating: true })
+    const idIn = this.props.attendance.id
+    const response = await removeAttendance(idIn, this.signal.token)
+    if (response.code == 200) {
+      this.setState({
+        updating: false
+      }) 
+      this.props.updateParent()
+    } else {
+      this.setState({
+        errorMessage: response.data,
+        updating: false
+      })
+    }
+  }
+
 }
 
 const styles = StyleSheet.create({
