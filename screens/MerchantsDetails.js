@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, Switch, ActivityIndicator } from 'react-native'
+import { View, StyleSheet, Switch, ActivityIndicator, Picker } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
-import { Text, Button, DropDownMenu, Icon, TextInput } from '@shoutem/ui'
+import { Text, Button, DropDownMenu, TextInput } from '@shoutem/ui'
+import { EvilIcons, FontAwesome } from '@expo/vector-icons'
+import ViewLoad from "../components/common/ViewLoad"
 import axios from 'axios'
 //consts & comps
 import colors from '../constants/colors'
@@ -16,7 +18,8 @@ export default class MerchantsDetails extends React.Component {
     this.state = {
       loading: false,
       activateLoading: false,
-      merchant: {}
+      merchant: {},
+      priceZoneBrackets: []
     }
 
     this.signal = axios.CancelToken.source()
@@ -28,24 +31,25 @@ export default class MerchantsDetails extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { hostId, authId, status, isActive, repName, repSurname, repEmail, repCell, name, legalName, description, category, standId, priceBracket } = this.state.merchant
-    //const { } = priceBracket
+    const { merchant } = this.state
+    const { repName, repSurname, repEmail, repCell, name, legalName, description } = merchant
+    const { isActive, hostId, authId, status, category, standId, priceZone } = merchant
 
     return (
       <View style={styles.container}>
 
         <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%'}}>
-          <Icon name="user-profile" style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }], margin: 30 }}/>
+          <EvilIcons name="cart" size={60} style={{marginLeft: 10}}/>
           <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 15}}>
             <Text style={styles.text1} >{name ? name : null}</Text>
-            <Text style={styles.text2}>{legalName ? legalName : null}</Text>
+            <Text style={styles.text2}>{legalName ? legalName : '(no legal name)'}</Text>
             <Text style={styles.text3}>{description ? description : null}</Text>
           </View>
         </View>
 
         <View style={styles.dividerBig}/>
 
-          <DataHeading icon={'email'} title={'Owner Details'}/>
+          <DataHeading icon={'user'} title={'Representative'}/>
           <DataRow title={'name'} text={repName ? repName : null}/>
           <DataRow title={'surname'} text={repSurname ? repSurname : null}/>
           <DataRow title={'email'} text={repEmail ? repEmail : null}/>
@@ -53,38 +57,53 @@ export default class MerchantsDetails extends React.Component {
 
         <View style={styles.divider}/>
 
+        <DataHeading icon={'pencil'} title={'Meta'}/>
+          <DataRow title={'status'} text={status ? status : null}/>
+          <DataRow title={'category'} text={category ? category : null}/>
+          <DataRow title={'stand'} text={standId ? standId : '(no stand id)'}/>
+
+        <View style={styles.divider}/>
+
         <View style={{width: '100%', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center'}}>
-        <DataHeading icon={'settings'} title={'Merchant Status'}/>
-        <View style={styles.lineContainer}>
-          <View style={styles.titleBox}>
-            <Text style={styles.text3}>{'Is Active: '}</Text>
+          <DataHeading icon={'gear'} title={'Settings'}/>
+          <View style={styles.lineContainer}>
+            <View style={styles.titleBox}>
+              <Text style={styles.text3}>{'Is Active: '}</Text>
+            </View>
+            <ViewLoad hide={this.state.activateLoading}>
+              <Switch
+                onValueChange={() => this._toogleState(isActive, 'id')}
+                value={isActive}
+                style={{ transform: [{ scaleX: .7 }, { scaleY: .7 }] }}
+                trackColor={{false: colors.pRed, true: colors.pGreen}}
+              />
+            </ViewLoad>
           </View>
-          {this.state.activateLoading ? 
-            (<ActivityIndicator/>) : 
-            (<Switch
-              onValueChange={() => this._toogleState(isActive, 'id')}
-              value={isActive}
-              style={{ transform: [{ scaleX: .7 }, { scaleY: .7 }] }}
-              trackColor={{false: colors.pRed, true: colors.pGreen}}
-            />)}
+          <DataRow title={'price zone'} text={priceZone ? priceZone.name : null}/>
         </View>
 
-            
-        </View>
-    
-    
+        <View style={styles.divider}/>
+
+        {/* <Picker
+          selectedValue={this.state.language}
+          style={{height: 50, width: 100}}
+          mode={'dropdown'}
+          onValueChange={(itemValue, itemIndex) =>
+            this.setState({language: itemValue})
+          }>
+          <Picker.Item label="Java" value="java" />
+          <Picker.Item label="JavaScript" value="js" />
+        </Picker> */}
+  
         <ButtonFloat navigation={navigation}/>
       </View>
     )
   }
 
   _toogleState = async (isActive = false) => {
-    console.log('_toogleState')
     let id = this.state.id
-
     this.setState({activateLoading: true})
     const response = isActive ? await deactivate(id, this.signal.token) : await activate(id, this.signal.token)
-    //console.log(response)
     if (response.code == 200) {
       await this._fetchData()
       this.setState({
@@ -98,16 +117,14 @@ export default class MerchantsDetails extends React.Component {
     }
   }
 
-  
-
   _fetchData = async () => {
     const idIn = this.props.navigation.state.params.id
     this.setState({ loading: true, id: idIn })
     const response = await getMerch(idIn, this.signal.token)
-    console.log('res', response)
     if (response.code == 200) {
       this.setState({
-        merchant: response.data,
+        merchant: response.data.merchant,
+        priceZoneBrackets: response.data.priceZoneBrackets,
         loading: false
       }) 
     } else {
@@ -128,7 +145,7 @@ const DataHeading = ({ icon, title }) => {
   return(
     <View style={styles.lineContainer}>
       <View style={styles.headingBox}>
-        <Icon name={icon}/>
+        <EvilIcons name={icon} size={30}/>
       </View>
       <Text style={styles.text2}>{title}</Text>
     </View>
@@ -169,7 +186,7 @@ const styles = StyleSheet.create({
     marginVertical: 5
   },
   divider: {
-    width: '100%', 
+    width: '97%', 
     height: 2, 
     backgroundColor: colors.secondary,
     marginVertical: 5
@@ -177,10 +194,12 @@ const styles = StyleSheet.create({
   titleBox: {
     width: 100,
     marginLeft: 12,
+    
   },
   headingBox: {
     width: 100,
     marginLeft: 12,
+    marginBottom: 3,
     flexDirection: 'row',
     justifyContent: 'flex-start'
   },

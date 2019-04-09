@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, FlatList } from 'react-native'
+import { View, StyleSheet, ScrollView, FlatList, RefreshControl } from 'react-native'
 import { Button, Text, Icon } from '@shoutem/ui'
 import CommunicCard from '../components/communication/CommunicCard'
 import axios from 'axios'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-//import axios from 'axios'
 //consts & comps
+import NoContent from "../components/common/NoContent"
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
@@ -20,7 +20,7 @@ export default class Communication extends React.Component {
     this.state = {
       messages: [],
       errorMessage: '',
-      loading: true
+      loading: false
     }
     this.signal = axios.CancelToken.source()
   }
@@ -35,7 +35,7 @@ export default class Communication extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { messages } = this.state
+    const { messages, loading } = this.state
     return (
       // <View style={styles.container}>
       //   <Text>Communication</Text>
@@ -46,7 +46,13 @@ export default class Communication extends React.Component {
 
 
       <View style={styles.container}>
-        <ScrollView>
+        <ScrollView refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => this._fetchData()}
+            />
+          }
+          >
 
           <Button style={{marginVertical: 18, marginHorizontal: 45, ...styleConsts.buttonBorder}} onPress={() => this.props.navigation.navigate('CommunicationNew')}>
             <Text>NEW MESSAGE</Text>
@@ -59,7 +65,7 @@ export default class Communication extends React.Component {
             renderItem={({item}) => this._renderMessage(item)}
             scrollEnabled={false}
             // isLoading={false}
-            ListEmptyComponent={<Text>NO CONTENT</Text>}
+            ListEmptyComponent={<NoContent refresh={true}/>}
           />
 
         </ScrollView>
@@ -76,10 +82,6 @@ export default class Communication extends React.Component {
   }
 
   _fetchData = async () => {
-    console.log("fetching data")
-    this.setState({messages: messageList})
-
-
     this.setState({ loading: true })
     const response = await adminInbox(HostID, this.signal.token)
     if (response.code == 200) {

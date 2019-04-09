@@ -78,7 +78,7 @@ export async function deactivate(id = '', token) {
             id: Option[String] = Some(UUID.randomUUID().toString))
 */
 export async function getMerch(id = '', token) {
-    const url =  MARKMAN_BASE_URL + `/${MID_URL}/get?id=${id}`
+    const url =  MARKMAN_BASE_URL + `/${MID_URL}/view/${id}`
     const packDataPromise = get(url, token)
 
     return packageResponse(packDataPromise)

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, ScrollView, Modal, ActivityIndicator } from 'react-native'
+import { View, StyleSheet, FlatList, ScrollView, Modal, ActivityIndicator, RefreshControl } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
 import DatePicker from 'react-native-datepicker'
@@ -10,6 +10,8 @@ import { Feather, MaterialCommunityIcons, MaterialIcons, AntDesign } from '@expo
 import axios from 'axios'
 import moment from 'moment'
 //consts & comps
+import ViewSwitch from "../components/common/ViewSwitch"
+import NoContent from "../components/common/NoContent"
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
@@ -23,7 +25,7 @@ export default class MarketDetails extends React.Component {
     this.state = {
       market: {},
       attendances: [],
-
+      loading: false,
       newAttendances: [],
       confirmDelete: false,
       deleting: false,
@@ -45,19 +47,16 @@ export default class MarketDetails extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { confirmDelete, market, searchInput, addModal, attendances, newAttendances, deleting } = this.state
+    const { confirmDelete, market, searchInput, addModal, attendances, newAttendances, deleting, loading } = this.state
     const { id, unCode, name, description, takeNote, setupStart, marketStart, marketEnd, standPrices, nAttendances, nInvPayed, nInvOuts, nInvSubm  } = market
 
     return (
       <View style={styles.container}>
       <Modal
-          animationType="fade"
-          transparent={true}
-          visible={addModal}
-          // onRequestClose={() => {
-          //   Alert.alert('Modal has been closed.');
-          // }}
-          >
+        animationType="fade"
+        transparent={true}
+        visible={addModal}
+        >
           <View style={{flex: 1, padding: 80, backgroundColor: colors.pBlackTransp, flexDirection: 'column', justifyContent: 'flex-start'}}>
           <View style={{backgroundColor: colors.pGrey, padding: 15, width: '100%', height: '100%'}}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
@@ -67,7 +66,14 @@ export default class MarketDetails extends React.Component {
               <MaterialIcons name={'done'} size={22}/>
             </Button>
           </View>
-          <ScrollView>
+          <ScrollView 
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                enabled={false}
+              />
+            }
+          >
           <SearchBar
             placeholder={'Find a Merchant'} 
             onChangeText={ (searchInput) => this._applySearch(searchInput)}
@@ -80,9 +86,8 @@ export default class MarketDetails extends React.Component {
             scrollEnabled={false}
             removeClippedSubviews={true}
             initialNumToRender={30}
-            // isLoading={false}
-            //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
-          />
+            ListEmptyComponent={<NoContent refresh={false}/>}
+            />
           </ScrollView>
               
           </View>
@@ -91,7 +96,14 @@ export default class MarketDetails extends React.Component {
 
 
 
-      <ScrollView>
+      <ScrollView 
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            enabled={false}
+          />
+        }
+      >
         <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
 
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
@@ -261,9 +273,8 @@ export default class MarketDetails extends React.Component {
             scrollEnabled={false}
             removeClippedSubviews={true}
             initialNumToRender={30}
-            // isLoading={false}
-            //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
-          />
+            ListEmptyComponent={<NoContent refresh={true}/>}
+            />
 
         </ScrollView>
         <ButtonFloat navigation={navigation}/>
@@ -272,14 +283,12 @@ export default class MarketDetails extends React.Component {
   }
 
   _renderAttendance = (attendance = {}) => {
-    //const navigation = this.props.navigation
     return (
       <AttendanceCard isCreate={false} attendance={attendance} updateParent={this._fetchData}/>
       )
   }
 
   _renderAddAttendance = (attendance = {}) => {
-    //const navigation = this.props.navigation
     let id = this.state.id
     return (
       <AttendanceAddCard marketId={id} attendance={attendance} removeNewAttendance={this._removeNewAttendance} />
@@ -288,7 +297,6 @@ export default class MarketDetails extends React.Component {
 
   _toggleModal = async (expand = false) => {
     this.setState({ addModal: expand, modalLoad: true })
-
     if(expand){
       let id = this.state.id
       const response = await loadAdd(HostID, id, this.signal.token)

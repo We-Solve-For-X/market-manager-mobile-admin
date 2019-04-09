@@ -20,15 +20,17 @@ export async function createMarket(marketCreate = {}, token) {
     return packageResponse(packDataPromise)
 }
 
-// case class Update(invoiceId: String,
-//                 refNum: String,
-//                 statusTo: String,
-//                 method: String,
-//                 comment: Option[String])
-export async function updatePayment(invoiceUpdate = {}, token) {
+//  case class Submit( invoiceId: String,
+//                     merchantId: String,
+//                     amount: Float,
+//                     reference: String,
+//                     sourceRef: Option[String],
+//                     method: String,
+//                     comment: Option[String])
+export async function submitPayment(payment = {}, token) {
     //Will be changed to a post soon
-    const url =  MARKMAN_BASE_URL + `/${MID_URL}/updatePayment`
-    const packDataPromise = post(url, invoiceUpdate, token)
+    const url =  MARKMAN_BASE_URL + `/${MID_URL}/submitPayment`
+    const packDataPromise = post(url, payment, token)
     
     return packageResponse(packDataPromise)
 }

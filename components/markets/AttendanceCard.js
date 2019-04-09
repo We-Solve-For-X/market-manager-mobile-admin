@@ -1,49 +1,59 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Switch } from 'react-native'
+import { StyleSheet, View, TouchableOpacity, Switch, ActivityIndicator } from 'react-native'
 import {  Text, Icon, Button, TextInput } from '@shoutem/ui'
 import axios from 'axios'
 import styleConsts from "../../constants/styleConsts"
 import colors from '../../constants/colors'
-import { removeAttendance } from "../../networking/nm_sfx_markets"
+import { systemAlert } from "../../services/systemAlerts"
+import ViewSwitch from "../../components/common/ViewSwitch"
+import { Feather, MaterialCommunityIcons, MaterialIcons, AntDesign, Ionicons } from '@expo/vector-icons';
+import { removeAttendance, submitPayment } from "../../networking/nm_sfx_markets"
 
 export default class AttendanceCard extends React.PureComponent {
-    constructor(props) {
-        super(props)
-        this.state = {
-          isExpanded: false,
-          verifyRemove: false,
-          removing: false,
-          updating: false,
+  constructor(props) {
+      super(props)
+      this.state = {
+        isExpanded: false,
+        //remove attendance
+        verifyRemove: false,
+        removing: false,
+        //payment
+        paymentMethod: null,
+        confirmPayment: false,
+        amount: 0,
+        paymentComment: '',
+        submitting: false
+      }
+      
+      this.signal = axios.CancelToken.source()
+  }
 
-          paymentMethod: null,
-          confirmPayment: false,
-          paymentComment: ''
-        }
-        
-        this.signal = axios.CancelToken.source()
-    }
-
+  componentDidMount = () => {
+    let amount = this.props.attendance.invoice ? this.props.attendance.invoice.amount : 0
+    this.setState({amount})
+  }
 
   render() {
-    const { navigation, attendance, isCreate } = this.props
+    const { attendance, isCreate } = this.props
     const { isExpanded, removing} = this.state
-    const { id, standId, merchant, invoice} = attendance
+    const { id, merchant, invoice} = attendance
+    const { isActive, repName, repSurname, name, description, priceZone, standId } = merchant
 
-    const { } = this.state
     return (
       <View style={styles.container}>
         <View style={styles.topBox} onPress={() => this.setState({isExpanded: !isExpanded})}>
           <View style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'}} >
-            <Text style={styles.textMain}>{merchant.name}</Text>
-            <Text style={styles.textSub}>{merchant.repName} {merchant.repSurname}</Text>
-            <Text style={styles.textSub}>{' 4 - R230 (Payment Bracket)'}</Text>
-            {isCreate ? 
-            null
-            :
-            <View>
-              <Text style={styles.textSub}>{`R${invoice.amount} - ${invoice.status}`}</Text>
-              <Text style={styles.textSub}>{'MREP120409 (Payment Ref)'}</Text>
-            </View>}
+            <Text style={styles.textMain}>{name}</Text>
+            <Text style={styles.textSub}>{repName} {repSurname}</Text>
+            <Text style={styles.textSub}>{`Price Bracket: ${priceZone.name}`}</Text>
+
+            <ViewSwitch hide={isCreate}>
+              <View>
+                <Text style={styles.textSub}>{`R${invoice ? invoice.amount : null} - ${invoice ? invoice.status : null}`}</Text>
+                <Text style={styles.textSub}>{`Refference: ${invoice ? invoice.refNum : null}`}</Text>
+              </View>
+            </ViewSwitch>
+            
           </View>
 
           <TouchableOpacity 
@@ -52,16 +62,11 @@ export default class AttendanceCard extends React.PureComponent {
             <View style={{height: '87%', width: 1, backgroundColor: colors.pWhite}}/>
             <Icon name="unfriend" style={{color: colors.pWhite, marginHorizontal: 20}}/>
           </TouchableOpacity>
-
-          
         </View>
-        {!isExpanded ?
-        null:
-        (<View style={{width: '100%', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingVertical: 4, backgroundColor: colors.primary, borderBottomLeftRadius: 3, borderBottomRightRadius: 3}}>
-          {/* <View style={styles.divider}/> */}
+
+        <ViewSwitch hide={!isExpanded} style={{width: '100%', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingVertical: 4, backgroundColor: colors.primary, borderBottomLeftRadius: 3, borderBottomRightRadius: 3}}>
           {this._renderExpand(isCreate, id, merchant.id)}
-        </View>)
-        }
+        </ViewSwitch>
       </View>
     )
   }
@@ -70,23 +75,12 @@ export default class AttendanceCard extends React.PureComponent {
     if(isCreate){
       return(
         <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '95%'}}>
-          { this.state.verifyRemove ? 
-          (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifyRemove: false})}>
-              <Text>CONFIRM</Text>
-              <Icon name="add-event" />
-            </Button>
-            <Button style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifyRemove: false})}>
-              <Text>CANCELL</Text>
-              <Icon name="add-event" />
-            </Button>
-          </View>)
-          : (<View>
+          <View>
             <Button style={{marginVertical: 10, marginHorizontal: 15, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.props.removeAttendance(merchId)}>
               <Text>REMOVE</Text>
-              <Icon name="plus-button" />
+              <Ionicons name="md-remove" size={22} />
             </Button>
-          </View>) }
+          </View>
         </View>
       )
     } else {
@@ -94,36 +88,41 @@ export default class AttendanceCard extends React.PureComponent {
       <View style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '100%'}}>
 
         <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%'}}>
-          
             <Button style={{marginVertical: 10, marginHorizontal: 5, ...styleConsts.buttonBorder, ...{backgroundColor: this.state.paymentMethod == 'card' ? colors.pGreen : colors.pWhite}}} onPress={() => this.setState({paymentMethod: 'card'})}>
               <Text>CARD</Text>
-              <Icon name="add-event" />
+              <MaterialIcons name="payment" size={24} />
             </Button>
             <Button style={{marginVertical: 10, marginHorizontal: 5, ...styleConsts.buttonBorder, ...{backgroundColor: this.state.paymentMethod == 'cash' ? colors.pGreen : colors.pWhite}}} onPress={() => this.setState({paymentMethod: 'cash'})}>
               <Text>CASH</Text>
-              <Icon name="add-event" />
+              <MaterialCommunityIcons name="cash" size={26} />
             </Button>
-          
             <Button style={{marginVertical: 10, marginHorizontal: 5, borderColor: colors.secondary, ...styleConsts.buttonBorder, ...{backgroundColor: this.state.paymentMethod == 'eft' ? colors.pGreen : colors.pWhite}}} onPress={() => this.setState({paymentMethod: 'eft'})}>
               <Text>EFT</Text>
-              <Icon name="plus-button" />
+              <MaterialIcons name="computer" size={23} />
             </Button>
-
         </View>
 
 
         {this.state.paymentMethod != null ? 
         (<View style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', width: '100%'}}>
           <TextInput
-            placeholder={'Additional payment information'}
-            onChangeText={(paymentComment) => this.setState({paymentComment})}
+            placeholder={'Amount'}
+            onChangeText={(amount) => {this.setState({amount})}}
+            defaultValue={`${this.state.amount}`}
             style={styles.textInput}
             maxLength={150}
+            value={this.state.amount}
+          />
+          <TextInput
+            placeholder={'Additional payment comment'}
+            onChangeText={(paymentComment) => this.setState({paymentComment})}
+            style={styles.textInput}
+            maxLength={250}
             value={this.state.paymentComment}
           />
-          <Button style={{marginVertical: 10, marginHorizontal: 5, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => {console.log('conf payment')}}>
-            <Text>CONFIRM</Text>
-            <Icon name="plus-button" />
+          <Button style={{marginVertical: 10, marginHorizontal: 5, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.state.submitting ? null : this._submitPayment()}>
+            <Text>SUBMIT</Text>
+            {this.state.submitting ? <ActivityIndicator/> : <AntDesign name="check" size={23} />}
           </Button>
 
         </View>)
@@ -142,13 +141,13 @@ export default class AttendanceCard extends React.PureComponent {
               style={{marginVertical: 5, marginHorizontal: 15, ...styleConsts.buttonBorder}} 
               onPress={() => this._removeAttendance()}>
               <Text>CONFIRM</Text>
-              <Icon name="add-event" />
+              <AntDesign name="check" size={23} />
             </Button>
             <Button 
               style={{marginVertical: 5, marginHorizontal: 15, ...styleConsts.buttonBorder}} 
               onPress={() => this.setState({verifyRemove: false})}>
               <Text>CANCELL</Text>
-              <Icon name="add-event" />
+              <AntDesign name="close" size={22} />
             </Button>
           </View>)
           : (
@@ -157,7 +156,7 @@ export default class AttendanceCard extends React.PureComponent {
               style={{marginVertical: 5, marginHorizontal: 15, borderColor: colors.secondary, backgroundColor: colors.pRed , ...styleConsts.buttonBorder}} 
               onPress={() => this.setState({verifyRemove: true})}>
               <Text>REMOVE</Text>
-              <Icon name="plus-button" />
+              <Ionicons name="md-remove" size={22} />
             </Button>
           </View>) }
 
@@ -175,7 +174,8 @@ export default class AttendanceCard extends React.PureComponent {
     const response = await removeAttendance(idIn, this.signal.token)
     if (response.code == 200) {
       this.setState({
-        removing: false
+        removing: false,
+        isExpanded: false
       }) 
       this.props.updateParent()
     } else {
@@ -186,19 +186,47 @@ export default class AttendanceCard extends React.PureComponent {
     }
   }
 
-  _updatePayment = async () => {
-    this.setState({ updating: true })
-    const idIn = this.props.attendance.id
-    const response = await removeAttendance(idIn, this.signal.token)
+  _submitPayment = async () => {
+    this.setState({ submitting: true })
+    const { merchant, invoice } = this.props.attendance
+    let method = this.state.paymentMethod
+    let comment = this.state.paymentComment
+    let invoiceId = invoice.id
+    let merchantId = merchant.id
+    let amount = parseFloat(this.state.amount)
+    let reference = invoice.refNum
+
+    if(method == null || invoiceId == null || merchantId == null || reference == null) {
+      systemAlert('Payment Error', 'Unable to retreive all fields required to make the payment')
+      this.setState({ submitting: false  })
+    } else if(amount == null) {
+      systemAlert('Payment Error', 'The payment amount you entered was incorrect')
+      this.setState({ submitting: false })
+    }
+
+    let payment = {
+      invoiceId,
+      merchantId,
+      amount,
+      reference,
+      sourceRef: 'administartor app: [Name]',
+      method,
+      comment
+    }
+    const response = await submitPayment(payment, this.signal.token)
     if (response.code == 200) {
-      this.setState({
-        updating: false
-      }) 
       this.props.updateParent()
+      this.setState({
+        submitting: false,
+        isExpanded: false,
+        confirmPayment: false
+      }) 
+      
     } else {
+      systemAlert('Payment Error', `There was an error processing the payment on our servers: ${response.data}`)
       this.setState({
         errorMessage: response.data,
-        updating: false
+        submitting: false
       })
     }
   }

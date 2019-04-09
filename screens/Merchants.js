@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, FlatList, Text } from 'react-native'
+import { View, StyleSheet, ScrollView, FlatList, RefreshControl } from 'react-native'
 import { Heading, Subtitle } from '@shoutem/ui'
 import SearchBar from '../components/common/SearchBar'
 import axios from 'axios'
 //consts & comps
 import MerchantCard from '../components/merchants/MerchantCard'
+import NoContent from "../components/common/NoContent"
 import colors from '../constants/colors'
 import layout from '../constants/layout'
 import { HostID } from "../config/env";
@@ -16,7 +17,7 @@ export default class Merchants extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      loading: true,
+      loading: false,
       searchInput: '',
       nPending: null,
       nApproved: null,
@@ -31,16 +32,19 @@ export default class Merchants extends React.Component {
     this._fetchData()
   }
 
-  // componentWillUnmount() {
-  //   this.signal.cancel('API request canceled due to componentUnmount')
-  // }
-
   render() {
     const { navigation } = this.props
-    const {searchInput, nPending, pending, nApproved, approved, approvedDisp } = this.state
+    const {searchInput, nPending, pending, nApproved, approved, approvedDisp, loading } = this.state
     return (
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} 
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => this._fetchData()}
+            />
+          }
+          >
 
           <View style={{ marginVertical: 8, padding: 8, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
             <Heading>Merchant Requests</Heading>
@@ -52,8 +56,6 @@ export default class Merchants extends React.Component {
             //keyExtractor={(item) => item.spotSummary.spotId}
             renderItem={({item}) => this._renderNewMerch(item)}
             scrollEnabled={false}
-            // isLoading={false}
-            //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
           />
 
           <View style={{ marginVertical: 8, padding: 8, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
@@ -73,9 +75,8 @@ export default class Merchants extends React.Component {
             scrollEnabled={false}
             removeClippedSubviews={true}
             initialNumToRender={30}
-            // isLoading={false}
-            //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
-          />
+            ListEmptyComponent={<NoContent refresh={true}/>}
+            />
         </ScrollView>
       </View>
     )
@@ -107,16 +108,9 @@ export default class Merchants extends React.Component {
       )
   }
 
- 
-
   _fetchData = async () => {
-    console.log("fetching data")
-    //this.setState({pending, merchantsApproved, approvedDisp: merchantsApproved})
-
     this.setState({ loading: true })
-
     const response = await load(HostID, this.signal.token)
-    console.log('response', response)
     if (response.code == 200) {
       this.setState({
         loading: false,
@@ -139,6 +133,7 @@ export default class Merchants extends React.Component {
     header: null
   }
 }
+
 
 const styles = StyleSheet.create({
   container: {
