@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, ActivityIndicator} from 'react-native'
+import { View, StyleSheet, ScrollView, RefreshControl} from 'react-native'
 import { Text, Heading, Subtitle, Title, TextInput, Button } from '@shoutem/ui'
 import axios from 'axios'
 //consts & comps
@@ -14,7 +14,7 @@ import { asGet } from "../services/asyncStorage/asApi"
 import { ProfileCnsts } from "../services/asyncStorage/asConsts"
 import { systemAlert } from "../services/systemAlerts"
 //API
-import { overview, updateAdministrator } from "../networking/nm_sfx_home"
+import { overview, updateAdministrator, updatePriceZones } from "../networking/nm_sfx_home"
 import { changePassword } from "../networking/nm_sfx_auth"
 
 export default class Home extends React.Component {
@@ -38,7 +38,23 @@ export default class Home extends React.Component {
       pRole: null,
       marketsTxt: '',
       paymentsTxt: '',
-      merchantsTxt: ''
+      merchantsTxt: '',
+
+      priceB1_key: null,
+      priceB1_name: null,
+      priceB1_cost: null,
+      priceB2_key: null,
+      priceB2_name: null,
+      priceB2_cost: null,
+      priceB3_key: null,
+      priceB3_name: null,
+      priceB3_cost: null,
+      priceB4_key: null,
+      priceB4_name: null,
+      priceB4_cost: null,
+      pbLoading: false,
+      pbErrorMessage: null
+
     }
     this.signal = axios.CancelToken.source()
   }
@@ -56,21 +72,27 @@ export default class Home extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { updating, host, marketsTxt, paymentsTxt, merchantsTxt, userName, cPassw, nPassw, loadingPw, pwErrorMessage, loadingPatch, patchErrorMessage } = this.state
+    const { updating, host, marketsTxt, paymentsTxt, merchantsTxt, userName, cPassw, nPassw, loadingPw, pwErrorMessage, loadingPatch, patchErrorMessage, loading } = this.state
     const { pName, pSurname, pEmail, pRole } = this.state
+    const { pbLoading, pbErrorMessage, priceB1_key, priceB1_name, priceB1_cost, priceB2_key, priceB2_name, priceB2_cost, priceB3_key, priceB3_name, priceB3_cost, priceB4_key, priceB4_name, priceB4_cost } = this.state
 
     return (
       <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => this._fetchData()}
+            />
+          } contentContainerStyle={styles.scrollContainer}>
         <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pGrey, ...styleConsts.viewShadow}}>
           <Title>Hi, {pName}!</Title>
           <Subtitle>Welcome to Irene Market Manager</Subtitle>
         </View>
 
-        <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        {/* <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
           <Heading>Markets</Heading>
           <Subtitle>{marketsTxt}</Subtitle>
-        </View>
+        </View> */}
 
         <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
           <Heading>Payments</Heading>
@@ -83,9 +105,9 @@ export default class Home extends React.Component {
         </View>
 
         <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
-          <Heading>Host Details</Heading>
-          <Subtitle>The following is Irene Market's Host Information:</Subtitle>
-
+          <Heading >Host Details</Heading>
+          <Subtitle>Irene Market's Host Information:</Subtitle>
+          <View style={styles.divider}/>
           <LineView title={'Name'}            value={host.name}/>
           <View style={styles.divider}/>
           <LineView title={'Contact Name'}    value={host.contactName}/>
@@ -101,6 +123,8 @@ export default class Home extends React.Component {
 
         <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
           <Heading>Bank Account Details</Heading>
+          <Subtitle>Bank account details into which merchants should make their payments:</Subtitle>
+          <View style={styles.divider}/>
           <LineView title={'Bank'}    value={host.bankAccount ? `${host.bankAccount.bankName}` : null}/>
           <View style={styles.divider}/>
           <LineView title={'Holder'}    value={host.bankAccount ? `${host.bankAccount.accountHolder}` : null}/>
@@ -116,13 +140,43 @@ export default class Home extends React.Component {
 
         <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
           <Heading>Price Brackets</Heading>
-          <Subtitle>The following shows the price brackets that are available for your merchants:</Subtitle>
+          <View style={styles.divider}/>
+          <Subtitle> Price Zone A:</Subtitle>
+          <LineInput title={'Description'} value={priceB1_name} onChange={(priceB1_name) => this.setState({priceB1_name})}/>
+          <LineInput title={'Cost'} value={`${priceB1_cost}`} onChange={(priceB1_cost) => this.setState({priceB1_cost})}/>
+          <View style={styles.divider}/>
+          <Subtitle> Price Zone B:</Subtitle>
+          <LineInput title={'Description'} value={priceB2_name} onChange={(priceB2_name) => this.setState({priceB2_name})}/>
+          <LineInput title={'Cost'} value={`${priceB2_cost}`} onChange={(priceB2_cost) => this.setState({priceB2_cost})}/>
+          <View style={styles.divider}/>
+          <Subtitle> Price Zone C:</Subtitle>
+          <LineInput title={'Description'} value={priceB3_name} onChange={(priceB3_name) => this.setState({priceB3_name})}/>
+          <LineInput title={'Cost'} value={`${priceB3_cost}`} onChange={(priceB3_cost) => this.setState({priceB3_cost})}/>
+          <View style={styles.divider}/>
+          <Subtitle> Price Zone D:</Subtitle>
+          <LineInput title={'Description'} value={priceB4_name} onChange={(priceB4_name) => this.setState({priceB4_name})}/>
+          <LineInput title={'Cost'} value={`${priceB4_cost}`} onChange={(priceB4_cost) => this.setState({priceB4_cost})}/>
+          <View style={styles.divider}/>
+
+          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <ViewSwitch hide={pbErrorMessage == null}>
+              <Text style={{marginHorizontal: 17, marginVertical: 8, color: colors.pRed}}>{pbErrorMessage}</Text>
+          </ViewSwitch>
+          <Button 
+            style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder, width: 115}} 
+            onPress={() => pbLoading ? null : this._updatePriceBrackets()}>
+            <Text>UPDATE</Text>
+            <ViewLoad hide={pbLoading}>
+              <AntDesign name="clouduploado" size={22} />
+            </ViewLoad>
+          </Button>   
+          </View> 
         </View>
 
         <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
           <Heading>Administrator Details</Heading>
-          <Subtitle>The following is your personal Profile Information:</Subtitle>
-
+          <Subtitle>Your personal profile information:</Subtitle>
+          <View style={styles.divider}/>
           <LineInput title={'Name'} value={pName} onChange={(pName) => this.setState({pName})}/>
           <View style={styles.divider}/>
           <LineInput title={'Surname'} value={pSurname} onChange={(pSurname) => this.setState({pSurname})}/>
@@ -149,6 +203,7 @@ export default class Home extends React.Component {
         <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
           <Heading>Sign-In Credentials</Heading>
           <Subtitle>Change your sign-in credentials:</Subtitle>
+          <View style={styles.divider}/>
           <LineView title={'Username'} value={userName} />
           <View style={styles.divider}/>
           <LineInput title={'Password'} value={cPassw} onChange={(cPassw) => this.setState({cPassw})} secureTextEntry={true} placeholder={'...current password'}/>
@@ -177,6 +232,44 @@ export default class Home extends React.Component {
     )
   }
 
+  _updatePriceBrackets = async () => {
+    this.setState({ pbLoading: true })
+    const { priceB1_name, priceB1_cost, priceB2_name, priceB2_cost, priceB3_name, priceB3_cost, priceB4_name, priceB4_cost } = this.state
+    console.log('nis', parseFloat(priceB1_cost))
+
+    if(isNaN(parseFloat(priceB1_cost)) || isNaN(parseFloat(priceB2_cost)) || isNaN(parseFloat(priceB3_cost)) || isNaN(parseFloat(priceB4_cost))) {
+      systemAlert('Invalid Amount', 'Please ensure all price zone costs are pure numericals')
+      this.setState({pbLoading: false})
+      return
+    }
+    else if(priceB1_name.length < 5 || priceB2_name.length < 5 || priceB3_name.length < 5 || priceB4_name.length < 5) {
+      systemAlert('Description Error', 'Ensure that all price bracket have an adequate description')
+      this.setState({pbLoading: false})
+      return
+    }
+
+    let zoneA = {key: 'A', name: priceB1_name, cost: parseFloat(priceB1_cost)}
+    let zoneB = {key: 'B', name: priceB2_name, cost: parseFloat(priceB2_cost)}
+    let zoneC = {key: 'C', name: priceB3_name, cost: parseFloat(priceB3_cost)}
+    let zoneD = {key: 'D', name: priceB4_name, cost: parseFloat(priceB4_cost)}
+
+    let update = { zoneA, zoneB, zoneC, zoneD }
+    let response = await updatePriceZones(HostID, update, this.signal.token)
+    if (response.code == 200) {
+      await this.setState({
+        pbLoading: false,
+        pbErrorMessage: null,
+        loading: false
+      })
+      //await this._fetchData() 
+    } else {
+      await this.setState({
+        pbErrorMessage: response.data,
+        pbLoading: false
+      })
+    }
+  }
+
   _updateAdminst = async () => {
     this.setState({ loadingPatch: true })
     let { pName, pSurname, pEmail, pRole } = this.state
@@ -193,15 +286,15 @@ export default class Home extends React.Component {
     let adminId = this.state.administratorId
     let update = { name: pName, surname: pSurname, email: pEmail, role: pRole }
     let response = await updateAdministrator(update, adminId, this.signal.token)
-    console.log(response)
     if (response.code == 200) {
       await this.setState({
         loadingPatch: false,
-        patchErrorMessage: null
-      }) 
-      await this._fetchData()
+        patchErrorMessage: null,
+        loading: false
+      })
+      //await this._fetchData() 
     } else {
-      this.setState({
+      await this.setState({
         patchErrorMessage: response.data,
         loadingPatch: false
       })
@@ -225,14 +318,14 @@ export default class Home extends React.Component {
     let response = await changePassword(update, this.signal.token)
     console.log(response)
     if (response.code == 200) {
-      this.setState({
+      await this.setState({
         loadingPw: false,
         cPassw: null,
         nPassw: null,
         pwErrorMessage: null
       }) 
     } else {
-      this.setState({
+      await this.setState({
         pwErrorMessage: response.data,
         loadingPw: false
       })
@@ -240,13 +333,13 @@ export default class Home extends React.Component {
   }
 
   _fetchData = async () => {
-    this.setState({ loading: true })
+    await this.setState({ loading: true })
     let adminId = this.state.administratorId
     let response = await overview(HostID, adminId, this.signal.token)
     console.log(response)
     if (response.code == 200) {
       let { host, profile } = response.data
-      this.setState({
+      await this.setState({
         host:         host, 
         pName:        profile.name,
         pSurname:     profile.surname,
@@ -255,10 +348,23 @@ export default class Home extends React.Component {
         marketsTxt:   response.data.marketsTxt, 
         paymentsTxt:  response.data.paymentsTxt, 
         merchantsTxt: response.data.merchantsTxt,
+
+        priceB1_key: 'A',
+        priceB1_name: host.priceBrackets.find(pz => pz.key === 'A').name,
+        priceB1_cost: host.priceBrackets.find(pz => pz.key === 'A').cost,
+        priceB2_key: 'B',
+        priceB2_name: host.priceBrackets.find(pz => pz.key === 'B').name,
+        priceB2_cost: host.priceBrackets.find(pz => pz.key === 'B').cost,
+        priceB3_key: 'C',
+        priceB3_name: host.priceBrackets.find(pz => pz.key === 'C').name,
+        priceB3_cost: host.priceBrackets.find(pz => pz.key === 'C').cost,
+        priceB4_key: 'D',
+        priceB4_name: host.priceBrackets.find(pz => pz.key === 'D').name,
+        priceB4_cost: host.priceBrackets.find(pz => pz.key === 'D').cost,
         loading:      false
       }) 
     } else {
-      this.setState({
+      await this.setState({
         errorMessage: response.data,
         loading: false
       })

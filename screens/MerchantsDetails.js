@@ -107,7 +107,7 @@ export default class MerchantsDetails extends React.Component {
                     return (
                       <TouchableOpacity style={{marginVertical: 5, marginHorizontal: 8, flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => this._updatePriceBracket(bracket)}>
                         <MaterialCommunityIcons size={22} name="square-inc-cash" /> 
-                        <Text>  R{bracket.cost}: {bracket.name}</Text>
+                        <Text>  Zone {bracket.key}: R{bracket.cost} ({bracket.name})</Text>
                       </TouchableOpacity>
                     )})
                   }

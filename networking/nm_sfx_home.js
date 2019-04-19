@@ -14,7 +14,15 @@ export async function overview(hostId = '', administratorId = '', token) {
 
 export async function updateAdministrator(patchBody = {}, administratorId = '', token) {
     //Will be changed to a post soon
-    const url =  MARKMAN_BASE_URL + `/${MID_URL}/administrator/${administratorId}`
+    const url =  MARKMAN_BASE_URL + `/${MID_URL}/administrators/${administratorId}`
+    const packDataPromise = patch(url, patchBody, token)
+    
+    return packageResponse(packDataPromise)
+}
+
+export async function updatePriceZones(hostId = '', patchBody = {}, administratorId = '', token) {
+    //Will be changed to a post soon
+    const url =  MARKMAN_BASE_URL + `/${MID_URL}/hosts/${hostId}/pricezones`
     const packDataPromise = patch(url, patchBody, token)
     
     return packageResponse(packDataPromise)
