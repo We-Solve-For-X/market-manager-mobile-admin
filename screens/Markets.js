@@ -6,6 +6,7 @@ import axios from 'axios'
 //consts & comps
 import MarketCard from '../components/markets/MarketCard'
 import NoContent from "../components/common/NoContent"
+import Updater from "../components/common/Updater"
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
@@ -21,7 +22,8 @@ export default class Markets extends React.Component {
       nFuture: 0,
       nPast: 0,
       loading: false,
-      markets: []
+      markets: [],
+      shouldRefresh: false
     }
     this.signal = axios.CancelToken.source()
   }
@@ -35,19 +37,18 @@ export default class Markets extends React.Component {
   }
 
   render() {
-    const { markets, loading, nFuture, nPast } = this.state
+    const { markets, loading, nFuture, nPast, shouldRefresh } = this.state
     
     return (
       <View style={styles.container}>
+        <Updater shouldRefresh={shouldRefresh} onRefresh={this._fetchData} doneRefresh={() => this.setState({shouldRefresh: false})} />
         <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={() => this._fetchData()}
-            />
-          }
+          refreshControl={ <RefreshControl refreshing={loading} onRefresh={() => this._fetchData()}/> }
         >
-          <Button style={styles.crButton} onPress={() => this.props.navigation.navigate('MarketAdd')}>
+          <Button style={styles.crButton} 
+            onPress={async () => {
+              await this.setState({shouldRefresh: true})
+              this.props.navigation.navigate('MarketAdd')}}>
             <Text>CREATE NEW MARKET</Text>
             <FontAwesome size={22} name="calendar-plus-o" /> 
           </Button>
@@ -66,9 +67,7 @@ export default class Markets extends React.Component {
 
   _renderMarket = (market) => {
     const navigation = this.props.navigation
-    return (
-      <MarketCard navigation={navigation} market={market}/>
-      )
+    return ( <MarketCard navigation={navigation} market={market}/> )
   }
 
   _fetchData = async () => {

@@ -47,9 +47,9 @@ export default class MerchantsDetails extends React.Component {
     return (
       <View style={styles.container}>
 
-        <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%'}}>
+        <View style={styles.topBox}>
           <EvilIcons name="cart" size={60} style={{marginLeft: 10}}/>
-          <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 15}}>
+          <View style={styles.topBoxFields}>
             <Text style={styles.text1} >{name ? name : null}</Text>
             <Text style={styles.text2}>{legalName ? legalName : '(no legal name)'}</Text>
             <Text style={styles.text3}>{description ? description : null}</Text>
@@ -73,7 +73,7 @@ export default class MerchantsDetails extends React.Component {
           <DataRow title={'Category'} text={category ? category : null}/>
         <View style={styles.divider}/>
 
-        <View style={{width: '100%', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center'}}>
+        <View style={styles.subCont}>
           <DataHeading icon={'gear'} title={'Settings'}/>
           <View style={styles.lineContainer}>
             <View style={styles.titleBox}>
@@ -82,7 +82,7 @@ export default class MerchantsDetails extends React.Component {
             <Switch
                 onValueChange={() => this.state.activateLoading ? null : this._toogleState(isActive)}
                 value={isActive}
-                style={{ transform: [{ scaleX: .7 }, { scaleY: .7 }] }}
+                style={styles.switch}
                 trackColor={{false: colors.pRed, true: colors.pGreen}}
               />
             <ViewLoad hide={this.state.activateLoading}/>
@@ -92,11 +92,11 @@ export default class MerchantsDetails extends React.Component {
             <View style={styles.titleBox}>
               <Text style={styles.text3}>{'Price Zone: '}</Text>
             </View>
-            <View style={{flexDirection: 'column', width: '100%'}}> 
+            <View style={styles.priceZoneCont}> 
               
               {!updatePrZone ? 
                 (<View>
-                  <TouchableOpacity style={{marginLeft: 8, margin: 2, flexDirection: 'row'}} onPress={() => this.setState({updatePrZone: true})}>
+                  <TouchableOpacity style={styles.priceZoneTouchCont} onPress={() => this.setState({updatePrZone: true})}>
                     <Text> {priceZone ? priceZone.name : null}</Text>
                     <FontAwesome size={15} name="sort-down" style={{marginHorizontal: 9}} />
                   </TouchableOpacity>
@@ -105,7 +105,7 @@ export default class MerchantsDetails extends React.Component {
                 (<ViewLoad hide={updatingPz}>
                   {priceZoneBrackets.map( (bracket) => {
                     return (
-                      <TouchableOpacity style={{marginVertical: 5, marginHorizontal: 8, flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => this._updatePriceBracket(bracket)}>
+                      <TouchableOpacity style={styles.priceCont} onPress={() => this._updatePriceBracket(bracket)}>
                         <MaterialCommunityIcons size={22} name="square-inc-cash" /> 
                         <Text>  Zone {bracket.key}: R{bracket.cost} ({bracket.name})</Text>
                       </TouchableOpacity>
@@ -221,12 +221,49 @@ const styles = StyleSheet.create({
     backgroundColor: colors.pViewBg,
     paddingHorizontal: 8
   },
+  subCont: {
+    width: '100%', 
+    flexDirection: 'column', 
+    justifyContent: 'flex-start', 
+    alignItems: 'center'
+  },
+  topBox: {
+    flexDirection: 'row', 
+    justifyContent: 'flex-start', 
+    alignItems: 'center', 
+    width: '100%'
+  },
+  topBoxFields: {
+    flexDirection: 'column', 
+    justifyContent: 'center', 
+    alignItems: 'flex-start', 
+    paddingLeft: 15
+  },
   lineContainer: {
     width: '100%', 
     flexDirection: 'row', 
     justifyContent: 'flex-start', 
     alignItems: 'center',
     marginVertical: 2
+  },
+  switch: { 
+    transform: [{ scaleX: .7 }, { scaleY: .7 }] 
+  },
+  priceZoneCont: {
+    flexDirection: 'column', 
+    width: '100%'
+  },
+  priceZoneTouchCont: {
+    marginLeft: 8, 
+    margin: 2, 
+    flexDirection: 'row'
+  },
+  priceCont: {
+    marginVertical: 5, 
+    marginHorizontal: 8, 
+    flexDirection: 'row', 
+    justifyContent: 'flex-start', 
+    alignItems: 'center'
   },
   dividerBig: {
     width: '100%', 

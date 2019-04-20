@@ -1,17 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, FlatList, RefreshControl } from 'react-native'
-import { Button, Text, Icon } from '@shoutem/ui'
+import { Button, Text } from '@shoutem/ui'
 import CommunicCard from '../components/communication/CommunicCard'
 import axios from 'axios'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 //consts & comps
 import NoContent from "../components/common/NoContent"
+import Updater from "../components/common/Updater"
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
-import layout from '../constants/layout'
-import { HostID } from "../config/env";
+import { HostID } from "../config/env"
 //API
-import { messageList } from "../networking/stubs"
 import { adminInbox } from "../networking/nm_sfx_communication"
 
 export default class Communication extends React.Component {
@@ -20,7 +19,8 @@ export default class Communication extends React.Component {
     this.state = {
       messages: [],
       errorMessage: '',
-      loading: false
+      loading: false,
+      shouldRefresh: false
     }
     this.signal = axios.CancelToken.source()
   }
@@ -35,26 +35,19 @@ export default class Communication extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { messages, loading } = this.state
+    const { messages, loading, shouldRefresh } = this.state
     return (
-      // <View style={styles.container}>
-      //   <Text>Communication</Text>
-      //   <Button title="Communication New" onPress={() => this.props.navigation.navigate('CommunicationNew')} />
-      //   <Button title="Communication View" onPress={() => this.props.navigation.navigate('CommunicationView')} />
-    
-      // </View>
-
-
       <View style={styles.container}>
-        <ScrollView refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={() => this._fetchData()}
-            />
-          }
+        <Updater shouldRefresh={shouldRefresh} onRefresh={this._fetchData} doneRefresh={() => this.setState({shouldRefresh: false})} />
+        <ScrollView 
+          refreshControl={ <RefreshControl refreshing={loading} nRefresh={() => this._fetchData()} />} 
+        >
+          <Button 
+            style={styles.addButton} 
+            onPress={ 
+              async () => { await this.setState({shouldRefresh: true})
+              this.props.navigation.navigate('CommunicationNew')}}
           >
-
-          <Button style={{marginVertical: 18, marginHorizontal: 45, ...styleConsts.buttonBorder}} onPress={() => this.props.navigation.navigate('CommunicationNew')}>
             <Text>NEW MESSAGE</Text>
             <MaterialCommunityIcons name="email-plus-outline" size={22} />
           </Button>
@@ -69,7 +62,6 @@ export default class Communication extends React.Component {
           />
 
         </ScrollView>
-
       </View>
     )
   }
@@ -95,7 +87,6 @@ export default class Communication extends React.Component {
         loading: false
       })
     }
-
   }
 
   static navigationOptions = {
@@ -110,4 +101,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: colors.pViewBg,
   },
+  addButton: {
+    marginVertical: 18, 
+    marginHorizontal: 45, 
+    ...styleConsts.buttonBorder
+  }
 });

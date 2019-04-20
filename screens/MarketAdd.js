@@ -9,6 +9,7 @@ import { AntDesign } from '@expo/vector-icons'
 import axios from 'axios'
 import moment from 'moment'
 //consts & comps
+import ViewSwitch from "../components/common/ViewSwitch"
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
 import layout from '../constants/layout'
@@ -45,7 +46,6 @@ export default class MarketAdd extends React.Component {
 
   componentDidMount = async () => {
     await this._fetchData()
-    console.log(this.state.attendances)
   }
 
   componentWillUnmount() {
@@ -57,36 +57,32 @@ export default class MarketAdd extends React.Component {
     const { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, attendancesDisp, loading } = this.state
     return (
       <View style={styles.container}>
+
       <ScrollView>
-        <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
 
-        <View style={{width: '100%', flexDirection: 'row', justifyContent: 'flex-end'}}>
-        </View>
-
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
-          <Title style={{color: colors.pWhite}}>Market Information</Title>
-
-          { verifySubmit ? 
-          (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => loading ? null : this._createMarket()}>
-              {!loading ? <Text>CONFIRM</Text> : <ActivityIndicator/>}
-              <AntDesign name="check" size={22} />
-            </Button>
-            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => loading ? null : this.setState({verifySubmit: false})}>
-              <Text>CANCELL</Text>
-              <AntDesign name="close" size={22} />
-            </Button>
-          </View>)
-          : (<View>
-            <Button style={{marginHorizontal: 10, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.setState({verifySubmit: true})}>
-              <Text>CREATE</Text>
-              <Icon name="plus-button" />
-            </Button>
-          </View>) }
-
-        </View>
+        <View style={styles.containerTop}>
+          <View style={styles.containerTopSub}>
+            <Title style={{color: colors.pWhite}}>Market Information</Title>
+            { verifySubmit ? 
+            (<View style={styles.submitContainer}>
+              <Button style={styles.button} onPress={() => loading ? null : this._createMarket()}>
+                {!loading ? <Text>CONFIRM</Text> : <ActivityIndicator/>}
+                <AntDesign name="check" size={22} />
+              </Button>
+              <Button style={styles.button} onPress={() => loading ? null : this.setState({verifySubmit: false})}>
+                <Text>CANCELL</Text>
+                <AntDesign name="close" size={22} />
+              </Button>
+            </View>)
+            : (<View>
+              <Button style={styles.button} onPress={() => this.setState({verifySubmit: true})}>
+                <Text>CREATE</Text>
+                <Icon name="plus-button" />
+              </Button>
+            </View>) }
+          </View>
         
-        <View style={styles.lineContainer}>
+          <View style={styles.lineContainer}>
             <View style={styles.titleBox}>
               <Text>Name: </Text>
             </View>
@@ -121,7 +117,7 @@ export default class MarketAdd extends React.Component {
               <Text>Setup Start: </Text>
             </View>
             <DatePicker
-              style={{width: 200,  padding: 0, margin: 0, flexDirection: 'column', justifyContent: 'center'}}
+              style={styles.datePicker}
               date={setupStart}
               mode="datetime"
               placeholder="--select a date--"
@@ -152,7 +148,7 @@ export default class MarketAdd extends React.Component {
               <Text>Market Start: </Text>
             </View>
             <DatePicker
-              style={{width: 200,  padding: 0, margin: 0, flexDirection: 'column', justifyContent: 'center'}}
+              style={styles.datePicker}
               date={marketStart}
               mode="datetime"
               placeholder="--select a date--"
@@ -182,7 +178,7 @@ export default class MarketAdd extends React.Component {
               <Text>Market End: </Text>
             </View>
             <DatePicker
-              style={{width: 200,  paddingHorizontal: 0, marginHorizontal: 0}}
+              style={styles.datePicker}
               date={marketEnd}
               mode="datetime"
               placeholder="--select a date--"
@@ -207,35 +203,33 @@ export default class MarketAdd extends React.Component {
           </View>
           <View style={styles.divider}/>
 
-          <View style={[styles.lineContainer, {height: 110}]}>
-            <View style={styles.titleBox}>
-              <Text>Take Note: </Text>
+            <View style={[styles.lineContainer, {height: 110}]}>
+              <View style={styles.titleBox}>
+                <Text>Take Note: </Text>
+              </View>
+              <TextInput
+                placeholder={'Information that will be usefull to the attendances'}
+                onChangeText={(takeNote) => this.setState({takeNote})}
+                style={styles.textInput}
+                maxLength={300}
+                value={takeNote}
+                multiline = {true}
+              />
             </View>
-            <TextInput
-              placeholder={'Information that will be usefull to the attendances'}
-              onChangeText={(takeNote) => this.setState({takeNote})}
-              style={styles.textInput}
-              maxLength={300}
-              value={takeNote}
-              multiline = {true}
-            />
+            <View style={[styles.divider, {marginBottom: 8}]}/>
+            <View style={styles.attendanceHeading}>
+              <Title style={{color: colors.pWhite}}>Attendances</Title>
+            </View>
           </View>
 
-          <View style={[styles.divider, {marginBottom: 8}]}/>
-
-          <View style={{flexDirection: 'row', justifyContent: 'center', height: 55, backgroundColor: colors.primary, width: '100%', padding: 10}}>
-            <Title style={{color: colors.pWhite}}>Attendances</Title>
-          </View>
-
-          </View>
           <SearchBar
             placeholder={'Find a Merchant'} 
             onChangeText={ (searchInput) => this._applySearch(searchInput)}
             value={searchInput}
           />
-
           <FlatList
             data={attendancesDisp}
+            contentContainerStyle={styles.scrollContainer}
             //keyExtractor={(item) => item.spotSummary.spotId}
             renderItem={({item}) => this._renderAttendance(item)}
             scrollEnabled={false}
@@ -244,7 +238,6 @@ export default class MarketAdd extends React.Component {
             // isLoading={false}
             //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
           />
-
         </ScrollView>
         <ButtonFloat navigation={navigation}/>
       </View>
@@ -289,7 +282,6 @@ export default class MarketAdd extends React.Component {
       marketStart: moment(marketStart, "MMM Do YYYY, h:mm a"),
       marketEnd: moment(marketEnd, "MMM Do YYYY, h:mm a")
     }
-    console.log('createBody', createBody)
     const response = await createMarket(createBody, this.signal.token)
     if (response.code == 200) {
       await this.setState({ loading: false, verifySubmit: false }) 
@@ -348,14 +340,56 @@ export default class MarketAdd extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.pViewBg,
-    paddingHorizontal: 10,
+    backgroundColor: colors.pViewBg
+  },
+  containerTop: {
+    width: '100%', 
+    flexDirection: 'column', 
+    alignItems: 'center'
+  },
+  containerTopSub: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    backgroundColor: colors.primary, 
+    width: '100%', 
+    padding: 10
+  },
+  scrollContainer: {
+    paddingHorizontal: 10
+  },
+  attendanceHeading: {
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    height: 55, 
+    backgroundColor: colors.primary, 
+    width: '100%', 
+    padding: 10
   },
   lineContainer: {
     width: '100%', 
     flexDirection: 'row', 
     justifyContent: 'flex-start', 
     alignItems: 'center'
+  },
+  button: {
+    marginHorizontal: 10, 
+    borderColor: colors.secondary, 
+    ...styleConsts.buttonBorder
+  },
+  datePicker: {
+    width: 200,  
+    padding: 0, 
+    margin: 0,
+    paddingHorizontal: 0, 
+    marginHorizontal: 0, 
+    flexDirection: 'column', 
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start'
+  },
+  submitContainer: {
+    flexDirection: 'row', 
+    justifyContent: 'center'
   },
   divider: {
     width: '98%', 

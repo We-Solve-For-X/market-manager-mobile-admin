@@ -1,14 +1,16 @@
-import React from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native'
+import React from 'react'
+import { View, StyleSheet } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
-import { Text, Button, DropDownMenu, Icon, TextInput } from '@shoutem/ui'
-import { Ionicons } from '@expo/vector-icons';
+import { Text, Button, DropDownMenu, TextInput } from '@shoutem/ui'
+import { Ionicons } from '@expo/vector-icons'
+import ViewLoad from "../components/common/ViewLoad"
 import axios from 'axios'
+import { asGet } from "../services/asyncStorage/asApi"
+import { ProfileCnsts } from "../services/asyncStorage/asConsts"
 //consts & comps
 import { HostID } from "../config/env";
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
-import layout from '../constants/layout'
 //API
 import { sendMessage, loadSend } from "../networking/nm_sfx_communication"
 import { sendMessageError, incompleteFields} from "../services/systemAlerts"
@@ -26,12 +28,13 @@ export default class CommunicationNew extends React.Component {
       topic: null,
       text: null
     }
-
     this.signal = axios.CancelToken.source()
   }
-  
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
+    let administratorId = await asGet(ProfileCnsts.adminstId)
+    let userName = await asGet(ProfileCnsts.username)
+    await this.setState({fromId: administratorId, fromName: userName})
     this._fetchData()
   }
 
@@ -44,7 +47,7 @@ export default class CommunicationNew extends React.Component {
     const { toOptions, toSelected, fromName, fromId, topic, text, sending, loading } = this.state
     return (
       <View style={styles.container}>
-        <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
+        <View style={styles.topFields}>
 
           <View style={styles.lineContainer}>
             <View style={styles.titleBox}>
@@ -56,11 +59,9 @@ export default class CommunicationNew extends React.Component {
               onOptionSelected={(selected) => this.setState({ toSelected: selected })}
               titleProperty="description"
               visibleOptions={5}
-              //style={{horizontalContainer: {backgroundColor: 'pink'}}}
             />
           </View>
           <View style={styles.divider}/>
-
           <View style={styles.lineContainer}>
             <View style={styles.titleBox}>
               <Text>From: </Text>
@@ -72,7 +73,6 @@ export default class CommunicationNew extends React.Component {
             />
           </View>
           <View style={styles.divider}/>
-
           <View style={styles.lineContainer}>
             <View style={styles.titleBox}>
               <Text>Topic: </Text>
@@ -86,26 +86,22 @@ export default class CommunicationNew extends React.Component {
             />
           </View>
           <View style={styles.divider}/>
-
-          <View style={{width: '100%', flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <View style={styles.buttonContainer}>
             <Button 
-              style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder, width: 115}} 
+              style={styles.sendButton} 
               onPress={() => {sending || loading ? null : this._sendMessage(topic, text, fromId, fromName, toSelected)}}>
               <Text>SEND</Text>
-              {(sending || loading) ? 
-              <ActivityIndicator size="small" color={colors.pBlack} />
-              : 
-              <Ionicons name="ios-send" size={22} />
-              }
+              <ViewLoad hide={(sending || loading)}>
+                <Ionicons name="ios-send" size={22} />
+              </ViewLoad>
             </Button>
           </View>
-          
         </View>
 
-        <View style={{flex: 1, flexDirection: 'row'}}>
+        <View style={styles.messageContainer}>
           <TextInput
             placeholder={'Compose message..'}
-            style={{height: '100%', flexDirection: 'column', justifyContent: 'flex-start', width: '100%'}}
+            style={styles.messageInput}
             onChangeText={(text) => this.setState({text})}
             multiline = {true}
             value={text}
@@ -138,13 +134,9 @@ export default class CommunicationNew extends React.Component {
 
   _fetchData = async () => {
     this.setState({ loading: true })
-    //get name & surname
-    //get uadministratorId
     const response = await loadSend(HostID, this.signal.token)
     if (response.code == 200) {
       this.setState({
-        fromId: 'fromId', 
-        fromName: 'Corlia Bredel',
         toOptions: response.data,
         toSelected: response.data[0],
         loading: false
@@ -168,6 +160,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.pViewBg,
     paddingHorizontal: 10
+  },
+  topFields: {
+    width: '100%', 
+    flexDirection: 'column', 
+    alignItems: 'center'
+  },
+  buttonContainer: {
+    width: '100%', 
+    flexDirection: 'row', 
+    justifyContent: 'flex-end'
+  },
+  sendButton: {
+    marginVertical: 10, 
+    marginHorizontal: 15, 
+    ...styleConsts.buttonBorder, width: 115
+  },
+  messageContainer: {
+    flex: 1, 
+    flexDirection: 'row'
+  },
+  messageInput: {
+    height: '100%', 
+    flexDirection: 'column', 
+    justifyContent: 'flex-start', 
+    width: '100%'
   },
   lineContainer: {
     width: '100%', 

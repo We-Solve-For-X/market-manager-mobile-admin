@@ -15,7 +15,7 @@ export default {
   pRed: '#C70039',
   pGreen: '#95BB52',
   pYellow: '#EAEB5E',
-  pBlackTransp: 'rgba(51,51,51,0.9)',
+  pBlackTransp: 'rgba(51,51,51,0.8)',
 
 
 

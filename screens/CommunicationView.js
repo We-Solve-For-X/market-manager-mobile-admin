@@ -1,13 +1,8 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
-import { Text, Button, DropDownMenu, Icon, TextInput } from '@shoutem/ui'
-//import axios from 'axios'
-//consts & comps
+import { Text, TextInput } from '@shoutem/ui'
 import colors from '../constants/colors'
-import layout from '../constants/layout'
-//API
-import { message1 } from "../networking/stubs";
 
 export default class CommunicationView extends React.Component {
   constructor(props){
@@ -23,12 +18,11 @@ export default class CommunicationView extends React.Component {
   render() {
     const { navigation } = this.props
     const message = navigation.getParam('message', {none: 'none'});
-    //const { topic, text, fromName, toName } = this.state
     const { topic, text, fromName, description } = message
 
     return (
       <View style={styles.container}>
-        <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
+        <View style={styles.topFields}>
           <View style={styles.lineContainer}>
             <View style={styles.titleBox}>
               <Text>From: </Text>
@@ -51,7 +45,6 @@ export default class CommunicationView extends React.Component {
               editable={false}
             />
           </View>
-
           <View style={styles.divider}/>
 
           <View style={styles.lineContainer}>
@@ -68,9 +61,9 @@ export default class CommunicationView extends React.Component {
           <View style={styles.divider}/>
         </View>
 
-        <View style={{flex: 1, flexDirection: 'row'}}>
+        <View style={styles.messageContainer}>
           <TextInput
-            style={{height: '100%', flexDirection: 'column', justifyContent: 'flex-start', width: '100%'}}
+            style={styles.messageInput}
             value={text}
             multiline = {true}
             editable={false}
@@ -82,29 +75,13 @@ export default class CommunicationView extends React.Component {
   }
 
   _fetchData = async () => {
-    console.log("fetching data")
-    const { id, topic, text, fromId, fromName, toType, toName, toId} = message1
-    
+    const { topic, text, fromName, toName} = message1
     this.setState({
       fromName,
       toName,
       topic,
       text,
     })
-    // this.setState({ loading: true })
-    // const response = await fetchLocationDetails(spotId, this.signal.token)
-    // if (response.code == 200) {
-    //   this.setState({
-    //     surfSpot: response.data.spot,
-    //     meta: response.data.meta,
-    //     loading: false
-    //   }) 
-    // } else {
-    //   this.setState({
-    //     errorMessage: response.data,
-    //     loading: false
-    //   })
-    // }
   }
 
   static navigationOptions = {
@@ -118,6 +95,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.pViewBg,
     paddingHorizontal: 8
+  },
+  topFields: {
+    width: '100%', 
+    flexDirection: 'column', 
+    alignItems: 'center'
+  },
+  messageContainer: {
+    flex: 1, 
+    flexDirection: 'row'
+  },
+  messageInput: {
+    height: '100%', 
+    flexDirection: 'column', 
+    justifyContent: 'flex-start', 
+    width: '100%'
   },
   lineContainer: {
     width: '100%', 

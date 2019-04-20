@@ -52,7 +52,7 @@ export default class Merchants extends React.Component {
           >
 
           <ViewSwitch hide={nPending == 0}>
-            <View style={{ marginVertical: 8, padding: 8, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+            <View style={styles.tileCont}>
               <Heading>Merchant Requests</Heading>
               <Subtitle>You have {nPending} pending merchant requests</Subtitle>
             </View>
@@ -64,7 +64,7 @@ export default class Merchants extends React.Component {
             />
           </ViewSwitch>
 
-          <View style={{ marginVertical: 8, padding: 8, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+          <View style={styles.tileCont}>
             <Heading>All Merchant</Heading>
             <Subtitle>You have {nApproved} registered merchants</Subtitle>
           </View>
@@ -154,4 +154,12 @@ const styles = StyleSheet.create({
     //alignItems: 'center',
     padding: 10
   },
+  tileCont: {
+    marginVertical: 8, 
+    padding: 8, 
+    borderRadius: 5, 
+    width: '100%', 
+    backgroundColor: colors.pWhite, 
+    ...styleConsts.viewShadow
+  }
 });

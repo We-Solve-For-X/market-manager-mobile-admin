@@ -6,7 +6,6 @@ import axios from 'axios'
 import ViewLoad from "../components/common/ViewLoad"
 import ViewSwitch from "../components/common/ViewSwitch"
 import colors from '../constants/colors'
-import layout from '../constants/layout'
 import styleConsts from '../constants/styleConsts' 
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { HostID } from "../config/env"
@@ -71,8 +70,7 @@ export default class Home extends React.Component {
   }
 
   render() {
-    const { navigation } = this.props
-    const { updating, host, marketsTxt, paymentsTxt, merchantsTxt, userName, cPassw, nPassw, loadingPw, pwErrorMessage, loadingPatch, patchErrorMessage, loading } = this.state
+    const { host, marketsTxt, paymentsTxt, merchantsTxt, userName, cPassw, nPassw, loadingPw, pwErrorMessage, loadingPatch, patchErrorMessage, loading } = this.state
     const { pName, pSurname, pEmail, pRole } = this.state
     const { pbLoading, pbErrorMessage, priceB1_key, priceB1_name, priceB1_cost, priceB2_key, priceB2_name, priceB2_cost, priceB3_key, priceB3_name, priceB3_cost, priceB4_key, priceB4_name, priceB4_cost } = this.state
 
@@ -84,27 +82,27 @@ export default class Home extends React.Component {
               onRefresh={() => this._fetchData()}
             />
           } contentContainerStyle={styles.scrollContainer}>
-        <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pGrey, ...styleConsts.viewShadow}}>
+        <View style={styles.dataCardTop}>
           <Title>Hi, {pName}!</Title>
           <Subtitle>Welcome to Irene Market Manager</Subtitle>
         </View>
 
-        {/* <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        {/* <View style={styles.dataCard}>
           <Heading>Markets</Heading>
           <Subtitle>{marketsTxt}</Subtitle>
         </View> */}
 
-        <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        <View style={styles.dataCard}>
           <Heading>Payments</Heading>
           <Subtitle>{paymentsTxt}</Subtitle>
         </View>
 
-        <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        <View style={styles.dataCard}>
           <Heading>Merchants</Heading>
           <Subtitle>{merchantsTxt}</Subtitle>
         </View>
 
-        <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        <View style={styles.dataCard}>
           <Heading >Host Details</Heading>
           <Subtitle>Irene Market's Host Information:</Subtitle>
           <View style={styles.divider}/>
@@ -121,49 +119,48 @@ export default class Home extends React.Component {
           <LineView title={'Address'}         value={host.address ? `${host.address.streetAddress} ${host.address.city}, ${host.address.state} - ${host.address.zipCode}` : null}/>
         </View>
 
-        <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        <View style={styles.dataCard}>
           <Heading>Bank Account Details</Heading>
           <Subtitle>Bank account details into which merchants should make their payments:</Subtitle>
           <View style={styles.divider}/>
-          <LineView title={'Bank'}    value={host.bankAccount ? `${host.bankAccount.bankName}` : null}/>
+          <LineView title={'Bank'}          value={host.bankAccount ? `${host.bankAccount.bankName}` : null}/>
           <View style={styles.divider}/>
-          <LineView title={'Holder'}    value={host.bankAccount ? `${host.bankAccount.accountHolder}` : null}/>
+          <LineView title={'Holder'}        value={host.bankAccount ? `${host.bankAccount.accountHolder}` : null}/>
           <View style={styles.divider}/>
-          <LineView title={'Type'}    value={host.bankAccount ? `${host.bankAccount.accountType}` : null}/>
+          <LineView title={'Type'}          value={host.bankAccount ? `${host.bankAccount.accountType}` : null}/>
           <View style={styles.divider}/>
-          <LineView title={'Number'}    value={host.bankAccount ? `${host.bankAccount.accountNumber}` : null}/>
+          <LineView title={'Number'}        value={host.bankAccount ? `${host.bankAccount.accountNumber}` : null}/>
           <View style={styles.divider}/>
-          <LineView title={'Branch Name'}    value={host.bankAccount ? `${host.bankAccount.branchName}` : null}/>
+          <LineView title={'Branch Name'}   value={host.bankAccount ? `${host.bankAccount.branchName}` : null}/>
           <View style={styles.divider}/>
-          <LineView title={'Branch Code'}    value={host.bankAccount ? `${host.bankAccount.branchCode}` : null}/>
+          <LineView title={'Branch Code'}   value={host.bankAccount ? `${host.bankAccount.branchCode}` : null}/>
         </View>
 
-        <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        <View style={styles.dataCard}>
           <Heading>Price Brackets</Heading>
           <View style={styles.divider}/>
           <Subtitle> Price Zone A:</Subtitle>
-          <LineInput title={'Description'} value={priceB1_name} onChange={(priceB1_name) => this.setState({priceB1_name})}/>
-          <LineInput title={'Cost'} value={`${priceB1_cost}`} onChange={(priceB1_cost) => this.setState({priceB1_cost})}/>
+          <LineInput title={'Description'}  value={priceB1_name} onChange={(priceB1_name) => this.setState({priceB1_name})}/>
+          <LineInput title={'Cost'}         value={`${priceB1_cost}`} onChange={(priceB1_cost) => this.setState({priceB1_cost})}/>
           <View style={styles.divider}/>
           <Subtitle> Price Zone B:</Subtitle>
-          <LineInput title={'Description'} value={priceB2_name} onChange={(priceB2_name) => this.setState({priceB2_name})}/>
-          <LineInput title={'Cost'} value={`${priceB2_cost}`} onChange={(priceB2_cost) => this.setState({priceB2_cost})}/>
+          <LineInput title={'Description'}  value={priceB2_name} onChange={(priceB2_name) => this.setState({priceB2_name})}/>
+          <LineInput title={'Cost'}         value={`${priceB2_cost}`} onChange={(priceB2_cost) => this.setState({priceB2_cost})}/>
           <View style={styles.divider}/>
           <Subtitle> Price Zone C:</Subtitle>
-          <LineInput title={'Description'} value={priceB3_name} onChange={(priceB3_name) => this.setState({priceB3_name})}/>
-          <LineInput title={'Cost'} value={`${priceB3_cost}`} onChange={(priceB3_cost) => this.setState({priceB3_cost})}/>
+          <LineInput title={'Description'}  value={priceB3_name} onChange={(priceB3_name) => this.setState({priceB3_name})}/>
+          <LineInput title={'Cost'}         value={`${priceB3_cost}`} onChange={(priceB3_cost) => this.setState({priceB3_cost})}/>
           <View style={styles.divider}/>
           <Subtitle> Price Zone D:</Subtitle>
-          <LineInput title={'Description'} value={priceB4_name} onChange={(priceB4_name) => this.setState({priceB4_name})}/>
-          <LineInput title={'Cost'} value={`${priceB4_cost}`} onChange={(priceB4_cost) => this.setState({priceB4_cost})}/>
+          <LineInput title={'Description'}  value={priceB4_name} onChange={(priceB4_name) => this.setState({priceB4_name})}/>
+          <LineInput title={'Cost'}         value={`${priceB4_cost}`} onChange={(priceB4_cost) => this.setState({priceB4_cost})}/>
           <View style={styles.divider}/>
-
-          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
           <ViewSwitch hide={pbErrorMessage == null}>
-              <Text style={{marginHorizontal: 17, marginVertical: 8, color: colors.pRed}}>{pbErrorMessage}</Text>
+              <Text style={styles.errorText}>{pbErrorMessage}</Text>
           </ViewSwitch>
+          <View style={styles.buttonContainer}>
           <Button 
-            style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder, width: 115}} 
+            style={styles.button} 
             onPress={() => pbLoading ? null : this._updatePriceBrackets()}>
             <Text>UPDATE</Text>
             <ViewLoad hide={pbLoading}>
@@ -173,24 +170,24 @@ export default class Home extends React.Component {
           </View> 
         </View>
 
-        <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        <View style={styles.dataCard}>
           <Heading>Administrator Details</Heading>
           <Subtitle>Your personal profile information:</Subtitle>
           <View style={styles.divider}/>
-          <LineInput title={'Name'} value={pName} onChange={(pName) => this.setState({pName})}/>
+          <LineInput title={'Name'}     value={pName} onChange={(pName) => this.setState({pName})}/>
           <View style={styles.divider}/>
-          <LineInput title={'Surname'} value={pSurname} onChange={(pSurname) => this.setState({pSurname})}/>
+          <LineInput title={'Surname'}  value={pSurname} onChange={(pSurname) => this.setState({pSurname})}/>
           <View style={styles.divider}/>
-          <LineInput title={'Email'} value={pEmail} onChange={(pEmail) => this.setState({pEmail})}/>
+          <LineInput title={'Email'}    value={pEmail} onChange={(pEmail) => this.setState({pEmail})}/>
           <View style={styles.divider}/>
-          <LineInput title={'Role'} value={pRole} onChange={(pRole) => this.setState({pRole})}/>
+          <LineInput title={'Role'}     value={pRole} onChange={(pRole) => this.setState({pRole})}/>
           <View style={styles.divider}/>
           <ViewSwitch hide={pwErrorMessage == null}>
-              <Text style={{marginHorizontal: 17, marginVertical: 8, color: colors.pRed}}>{patchErrorMessage}</Text>
+              <Text style={styles.errorText}>{patchErrorMessage}</Text>
           </ViewSwitch>
-          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <View style={styles.buttonContainer}>
           <Button 
-            style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder, width: 115}} 
+            style={styles.button} 
             onPress={() => loadingPatch ? null : this._updateAdminst()}>
             <Text>UPDATE</Text>
             <ViewLoad hide={loadingPatch}>
@@ -200,32 +197,30 @@ export default class Home extends React.Component {
           </View> 
         </View>
 
-        <View style={{ margin: 10, padding: 5, borderRadius: 5, width: '100%', backgroundColor: colors.pWhite, ...styleConsts.viewShadow}}>
+        <View style={styles.dataCard}>
           <Heading>Sign-In Credentials</Heading>
           <Subtitle>Change your sign-in credentials:</Subtitle>
           <View style={styles.divider}/>
-          <LineView title={'Username'} value={userName} />
+          <LineView title={'Username'}      value={userName} />
           <View style={styles.divider}/>
-          <LineInput title={'Password'} value={cPassw} onChange={(cPassw) => this.setState({cPassw})} secureTextEntry={true} placeholder={'...current password'}/>
+          <LineInput title={'Password'}     value={cPassw} onChange={(cPassw) => this.setState({cPassw})} secureTextEntry={true} placeholder={'...current password'}/>
           <View style={styles.divider}/>
           <LineInput title={'New Password'} value={nPassw} onChange={(nPassw) => this.setState({nPassw})} secureTextEntry={true} placeholder={'...new password'}/>
           <View style={styles.divider}/>
           <ViewSwitch hide={pwErrorMessage == null}>
-              <Text style={{marginHorizontal: 17, marginVertical: 8, color: colors.pRed}}>{pwErrorMessage}</Text>
+              <Text style={styles.errorText}>{pwErrorMessage}</Text>
           </ViewSwitch>
-          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <View style={styles.buttonContainer}>
           <Button 
-            style={{marginVertical: 10, marginHorizontal: 15, ...styleConsts.buttonBorder, width: 115}} 
+            style={styles.button} 
             onPress={() => loadingPw ? null : this._changePassword()}>
             <Text>UPDATE</Text>
             <ViewLoad hide={loadingPw}>
               <AntDesign name="clouduploado" size={22} />
             </ViewLoad>
-            
           </Button>   
           </View> 
         </View>
-
 
         </ScrollView>
       </View>
@@ -235,8 +230,6 @@ export default class Home extends React.Component {
   _updatePriceBrackets = async () => {
     this.setState({ pbLoading: true })
     const { priceB1_name, priceB1_cost, priceB2_name, priceB2_cost, priceB3_name, priceB3_cost, priceB4_name, priceB4_cost } = this.state
-    console.log('nis', parseFloat(priceB1_cost))
-
     if(isNaN(parseFloat(priceB1_cost)) || isNaN(parseFloat(priceB2_cost)) || isNaN(parseFloat(priceB3_cost)) || isNaN(parseFloat(priceB4_cost))) {
       systemAlert('Invalid Amount', 'Please ensure all price zone costs are pure numericals')
       this.setState({pbLoading: false})
@@ -316,7 +309,6 @@ export default class Home extends React.Component {
     }
     let update = { username: userName, cPassword: cPassw, nPassword: nPassw }
     let response = await changePassword(update, this.signal.token)
-    console.log(response)
     if (response.code == 200) {
       await this.setState({
         loadingPw: false,
@@ -336,7 +328,6 @@ export default class Home extends React.Component {
     await this.setState({ loading: true })
     let adminId = this.state.administratorId
     let response = await overview(HostID, adminId, this.signal.token)
-    console.log(response)
     if (response.code == 200) {
       let { host, profile } = response.data
       await this.setState({
@@ -416,6 +407,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.pViewBg,
     //padding: 10
   },
+  dataCardTop: { 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    margin: 10, 
+    padding: 5, 
+    borderRadius: 5, 
+    width: '100%', 
+    backgroundColor: colors.pGrey, 
+    ...styleConsts.viewShadow
+  },
+  dataCard: { 
+    margin: 10, 
+    padding: 5, 
+    borderRadius: 5, 
+    width: '100%', 
+    backgroundColor: colors.pWhite, 
+    ...styleConsts.viewShadow
+  },
   scrollContainer: {
     width: '100%',
     flexDirection: 'column',
@@ -428,6 +437,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'flex-start', 
     alignItems: 'center'
+  },
+  buttonContainer: {
+    flexDirection: 'row', 
+    justifyContent: 'flex-end'
+  },
+  button: {
+    marginVertical: 10, 
+    marginHorizontal: 15, 
+    ...styleConsts.buttonBorder, width: 115
+  },
+  errorText: {
+    marginHorizontal: 17, 
+    marginVertical: 8, 
+    color: colors.pRed
   },
   divider: {
     width: '98%', 

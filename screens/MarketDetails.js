@@ -60,10 +60,10 @@ export default class MarketDetails extends React.Component {
         transparent={true}
         visible={addModal}
         >
-          <View style={{flex: 1, padding: 80, backgroundColor: colors.pBlackTransp, flexDirection: 'column', justifyContent: 'flex-start'}}>
-          <View style={{backgroundColor: colors.pGrey, padding: 15, width: '100%', height: '100%'}}>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
-            <Title style={{color: colors.pWhite}}>Add Merchants</Title>
+          <View style={styles.modalContainer}>
+          <View style={styles.mdInner}>
+          <View style={styles.mdHide}>
+            <Title style={styles.title}>Add Merchants</Title>
             <Button onPress={() => this._toggleModal(false)}>
               <Text>Done</Text>
               <MaterialIcons name={'done'} size={22}/>
@@ -107,23 +107,23 @@ export default class MarketDetails extends React.Component {
           />
         }
       >
-        <View style={{width: '100%', flexDirection: 'column', alignItems: 'center'}}>
+        <View style={styles.subCont}>
 
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, width: '100%', padding: 10}}>
-          <Title style={{color: colors.pWhite}}>Market Information</Title>
+        <View style={styles.deleteCon}>
+          <Title style={styles.title}>Market Information</Title>
           { confirmDelete ? 
-          (<View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => deleting ? null : this._deleteMarket()}>
+          (<View style={styles.deleteCon2}>
+            <Button style={styles.button} onPress={() => deleting ? null : this._deleteMarket()}>
               <Text>CONFIRM</Text>
               {deleting ? <ActivityIndicator/> : <AntDesign name="check" size={22} />}
             </Button>
-            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => deleting ? null : this.setState({confirmDelete: false})}>
+            <Button style={styles.button} onPress={() => deleting ? null : this.setState({confirmDelete: false})}>
               <Text>CANCELL</Text>
               <AntDesign name="close" size={22} />
             </Button>
           </View>)
           : (<View>
-            <Button style={{ marginHorizontal: 15, borderColor: colors.secondary, ...styleConsts.buttonBorder}} onPress={() => this.setState({confirmDelete: true})}>
+            <Button style={styles.button} onPress={() => this.setState({confirmDelete: true})}>
               <Text>DELETE</Text>
               <MaterialCommunityIcons name="delete-outline" size={25} color={colors.pBlack} />
             </Button>
@@ -265,9 +265,9 @@ export default class MarketDetails extends React.Component {
 
           <View style={[styles.divider, {marginBottom: 8}]}/>
 
-          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',  backgroundColor: colors.primary, width: '100%', padding: 10}}>
-            <Title style={{color: colors.pWhite}}>Attendances</Title>
-            <Button style={{marginHorizontal: 15, ...styleConsts.buttonBorder}} onPress={() => this._toggleModal(true)}>
+          <View style={styles.addCont}>
+            <Title style={styles.title}>Attendances</Title>
+            <Button style={styles.button} onPress={() => this._toggleModal(true)}>
               <Text>ADD</Text>
               <Feather name="user-plus" size={22}/>
             </Button>
@@ -414,6 +414,59 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.pViewBg,
     //paddingHorizontal: 10,
+  },
+  modalContainer: {
+    flex: 1, 
+    padding: 80, 
+    backgroundColor: colors.pBlackTransp, 
+    flexDirection: 'column', 
+    justifyContent: 'flex-start'
+  },
+  mdInner: {
+    backgroundColor: colors.pGrey, 
+    padding: 15, 
+    width: '100%', 
+    height: '100%'
+  },
+  mdHide: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    backgroundColor: colors.primary, 
+    width: '100%', padding: 10
+  },
+  title: {
+    color: colors.pWhite
+  },
+  subCont: {
+    width: '100%', 
+    flexDirection: 'column', 
+    alignItems: 'center'
+  },  
+  deleteCon: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    backgroundColor: colors.primary, 
+    width: '100%', 
+    padding: 10
+  },
+  deleteCon2: {
+    flexDirection: 'row', 
+    justifyContent: 'center'
+  },
+  addCont: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    backgroundColor: colors.primary, 
+    width: '100%', 
+    padding: 10
+  },
+  button: { 
+    marginHorizontal: 15, 
+    borderColor: colors.secondary, 
+    ...styleConsts.buttonBorder
   },
   lineContainer: {
     width: '100%', 
