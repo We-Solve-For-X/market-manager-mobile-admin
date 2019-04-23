@@ -8,6 +8,7 @@ import { systemAlert } from "../../services/systemAlerts"
 import ViewSwitch from "../../components/common/ViewSwitch"
 import { Feather, MaterialCommunityIcons, MaterialIcons, AntDesign, Ionicons } from '@expo/vector-icons';
 import { removeAttendance, submitPayment } from "../../networking/nm_sfx_markets"
+import { isTablet } from '../../constants/platform';
 
 export default class AttendanceCard extends React.PureComponent {
   constructor(props) {
@@ -57,7 +58,7 @@ export default class AttendanceCard extends React.PureComponent {
           </View>
 
           <TouchableOpacity 
-            style={{marginHorizontal: 7, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: '100%'}} 
+            style={{marginHorizontal: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: '100%'}} 
             onPress={() => this.setState({isExpanded: !isExpanded})}>
             <View style={{height: '87%', width: 1, backgroundColor: colors.pWhite}}/>
             <MaterialCommunityIcons name="dots-horizontal" size={25} style={{color: colors.pWhite, marginHorizontal: 20}}/>
@@ -88,6 +89,7 @@ export default class AttendanceCard extends React.PureComponent {
       <View>
 
         <ViewSwitch hide={invStatus == 'paid'}>
+        <Text style={{color: colors.pWhite, paddingLeft: 8}}>Confirm Payment</Text>
           <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', width: '100%'}}>
               <Button style={{marginVertical: 10, marginHorizontal: 5, ...styleConsts.buttonBorder, ...{backgroundColor: this.state.paymentMethod == 'card' ? colors.pGreen : colors.pWhite}}} onPress={() => this.setState({paymentMethod: 'card'})}>
                 <Text>CARD</Text>
@@ -114,7 +116,7 @@ export default class AttendanceCard extends React.PureComponent {
                 value={this.state.amount}
               />
               <TextInput
-                placeholder={'Additional payment comment'}
+                placeholder={'Comment'}
                 onChangeText={(paymentComment) => this.setState({paymentComment})}
                 style={styles.textInput}
                 maxLength={250}
@@ -127,7 +129,7 @@ export default class AttendanceCard extends React.PureComponent {
 
             </View>
           </ViewSwitch>
-            
+          <View style={styles.divider}/>
         </ViewSwitch>
 
         <View style={{height: 1, width: '96%', backgroundColor: colors.pWhite}}/>
@@ -137,25 +139,28 @@ export default class AttendanceCard extends React.PureComponent {
           (
           <View style={{flexDirection: 'row', justifyContent: 'center'}}>
             <Button 
-              style={{marginVertical: 5, marginHorizontal: 15, ...styleConsts.buttonBorder}} 
+              style={styleConsts.button} 
               onPress={() => this._removeAttendance()}>
-              <Text>CONFIRM</Text>
+              <ViewSwitch hide={!isTablet}>
+                <Text>CONFIRM</Text>
+              </ViewSwitch>
               <AntDesign name="check" size={23} />
             </Button>
             <Button 
-              style={{marginVertical: 5, marginHorizontal: 15, ...styleConsts.buttonBorder}} 
+              style={styleConsts.button} 
               onPress={() => this.setState({verifyRemove: false})}>
-              <Text>CANCELL</Text>
+              <ViewSwitch hide={!isTablet}>
+                <Text>CANCELL</Text>
+              </ViewSwitch>
               <AntDesign name="close" size={22} />
             </Button>
           </View>)
           : (
           <View>
             <Button 
-              style={{marginVertical: 5, marginHorizontal: 15, borderColor: colors.secondary, backgroundColor: colors.pRed , ...styleConsts.buttonBorder}} 
+              style={styleConsts.button} 
               onPress={() => this.setState({verifyRemove: true})}>
-              <Text>REMOVE</Text>
-              {/* <Ionicons name="md-remove" size={22} /> */}
+                <Text>REMOVE</Text>
             </Button>
           </View>) }
 
@@ -269,9 +274,10 @@ const styles = StyleSheet.create({
       paddingVertical: 2
     },
     divider: {
-      width: '97%', 
+      width: '100%', 
       height: 0.5, 
-      backgroundColor: colors.pWhite
+      backgroundColor: colors.pWhite,
+      marginBottom: 5
     },
     titleBox: {
       width: 80,
@@ -285,6 +291,7 @@ const styles = StyleSheet.create({
       backgroundColor: 'transparent', 
       height: 42, 
       paddingVertical: 0,
-      width: '50%'
+      width: '50%',
+      color: colors.pWhite
     },
   })

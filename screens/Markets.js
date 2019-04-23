@@ -4,6 +4,7 @@ import { Button, Text, Icon } from '@shoutem/ui'
 import { FontAwesome } from '@expo/vector-icons';
 import axios from 'axios'
 //consts & comps
+import ErrorLine from "../components/common/ErrorLine"
 import MarketCard from '../components/markets/MarketCard'
 import NoContent from "../components/common/NoContent"
 import Updater from "../components/common/Updater"
@@ -37,7 +38,7 @@ export default class Markets extends React.Component {
   }
 
   render() {
-    const { markets, loading, nFuture, nPast, shouldRefresh } = this.state
+    const { markets, loading, nFuture, nPast, shouldRefresh, errorMessage } = this.state
     
     return (
       <View style={styles.container}>
@@ -45,6 +46,8 @@ export default class Markets extends React.Component {
         <ScrollView
           refreshControl={ <RefreshControl refreshing={loading} onRefresh={() => this._fetchData()}/> }
         >
+          <ErrorLine errorMessage={errorMessage}/>
+
           <Button style={styles.crButton} 
             onPress={async () => {
               await this.setState({shouldRefresh: true})
@@ -78,7 +81,8 @@ export default class Markets extends React.Component {
         nFuture: response.data.nFuture,
         nPast: response.data.nPast, 
         markets: response.data.markets,
-        loading: false
+        loading: false,
+        errorMessage: null
       }) 
     } else {
       this.setState({

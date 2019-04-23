@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, ScrollView, ActivityIndicator } from 'react-native'
+import { isTablet } from "../constants/platform";
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
 import DatePicker from 'react-native-datepicker'
@@ -9,6 +10,8 @@ import { AntDesign } from '@expo/vector-icons'
 import axios from 'axios'
 import moment from 'moment'
 //consts & comps
+import LineInput from "../components/common/LineInput"
+import LineView from "../components/common/LineView"
 import ViewSwitch from "../components/common/ViewSwitch"
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
@@ -17,6 +20,7 @@ import { HostID } from "../config/env"
 import { incompleteFields, systemAlert } from "../services/systemAlerts"
 //API
 import { loadCreate, createMarket } from "../networking/nm_sfx_markets";
+import ViewLoad from '../components/common/ViewLoad';
 
 export default class MarketAdd extends React.Component {
   constructor(props){
@@ -65,53 +69,38 @@ export default class MarketAdd extends React.Component {
             <Title style={{color: colors.pWhite}}>Market Information</Title>
             { verifySubmit ? 
             (<View style={styles.submitContainer}>
-              <Button style={styles.button} onPress={() => loading ? null : this._createMarket()}>
-                {!loading ? <Text>CONFIRM</Text> : <ActivityIndicator/>}
-                <AntDesign name="check" size={22} />
+              <Button style={styleConsts.button} onPress={() => loading ? null : this._createMarket()}>
+              <ViewSwitch hide={!isTablet}>
+                <Text>CONFIRM</Text>
+              </ViewSwitch>
+              <ViewLoad hide={loading}>
+                <AntDesign name="check" size={22} style={{paddingHorizontal: 0}} />
+              </ViewLoad>
+                
+
               </Button>
-              <Button style={styles.button} onPress={() => loading ? null : this.setState({verifySubmit: false})}>
-                <Text>CANCELL</Text>
+              <Button style={styleConsts.button} onPress={() => loading ? null : this.setState({verifySubmit: false})}>
+                <ViewSwitch hide={!isTablet}>
+                  <Text>CANCELL</Text>
+                </ViewSwitch>
                 <AntDesign name="close" size={22} />
               </Button>
             </View>)
             : (<View>
-              <Button style={styles.button} onPress={() => this.setState({verifySubmit: true})}>
-                <Text>CREATE</Text>
+              <Button style={styleConsts.button} onPress={() => this.setState({verifySubmit: true})}>
+                <ViewSwitch hide={!isTablet}>
+                  <Text>CREATE</Text>
+                </ViewSwitch>
                 <Icon name="plus-button" />
               </Button>
             </View>) }
           </View>
         
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Name: </Text>
-            </View>
-            <TextInput
-              placeholder={'Short name for the market instance'}
-              onChangeText={(name) => this.setState({name})}
-              style={styles.textInput}
-              maxLength={28}
-              value={name}
-            />
-          </View>
-
+        
+          <LineInput title={'Name'}    value={name} onChange={(name) => this.setState({name})}/>
           <View style={styles.divider}/>
-
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Description: </Text>
-            </View>
-            <TextInput
-              placeholder={'Description of the market instance'}
-              onChangeText={(description) => this.setState({description})}
-              style={styles.textInput}
-              maxLength={80}
-              value={description}
-            />
-          </View>
-
+          <LineInput title={'Description'}    value={description}  maxLength={60} onChange={(description) => this.setState({description})}/>
           <View style={styles.divider}/>
-
           <View style={styles.lineContainer}>
             <View style={styles.titleBox}>
               <Text>Setup Start: </Text>
@@ -202,21 +191,10 @@ export default class MarketAdd extends React.Component {
             />
           </View>
           <View style={styles.divider}/>
+          <LineInput title={'Take Note'}    value={takeNote}  maxLength={300} onChange={(takeNote) => this.setState({takeNote})}/>
+         
 
-            <View style={[styles.lineContainer, {height: 110}]}>
-              <View style={styles.titleBox}>
-                <Text>Take Note: </Text>
-              </View>
-              <TextInput
-                placeholder={'Information that will be usefull to the attendances'}
-                onChangeText={(takeNote) => this.setState({takeNote})}
-                style={styles.textInput}
-                maxLength={300}
-                value={takeNote}
-                multiline = {true}
-              />
-            </View>
-            <View style={[styles.divider, {marginBottom: 8}]}/>
+          <View style={[styles.divider, {marginBottom: 8}]}/>
             <View style={styles.attendanceHeading}>
               <Title style={{color: colors.pWhite}}>Attendances</Title>
             </View>
@@ -360,7 +338,8 @@ const styles = StyleSheet.create({
   },
   attendanceHeading: {
     flexDirection: 'row', 
-    justifyContent: 'center', 
+    justifyContent: 'flex-start', 
+    alignItems: 'center',
     height: 55, 
     backgroundColor: colors.primary, 
     width: '100%', 
@@ -404,6 +383,6 @@ const styles = StyleSheet.create({
   },
   titleBox: {
     width: 95,
-    marginLeft: 12
+    marginLeft: 5
   },
 })

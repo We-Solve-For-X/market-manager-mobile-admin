@@ -1,8 +1,9 @@
 import React from 'react'
-import { Platform, Easing, Animated, Text } from 'react-native'
+import { Easing, Animated, Text } from 'react-native'
 import { createStackNavigator, createMaterialTopTabNavigator, TransitionConfig } from 'react-navigation'
 import colors from '../constants/colors'
-import TabBarIcon from '../components/TabBarIcon'
+import { isTablet } from "../constants/platform"
+import { MaterialCommunityIcons, AntDesign, MaterialIcons } from '@expo/vector-icons'
 import Home from '../screens/Home'
 import Markets from '../screens/Markets'
 import MarketDetails from '../screens/MarketDetails'
@@ -18,17 +19,10 @@ const HomeStack = createStackNavigator({
   Home: Home,
 })
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+  tabBarLabel:"Home Page",
+  tabBarIcon: ({ tintColor }) => (
+    <MaterialCommunityIcons name="home-outline" size={22} color={colors.pWhite}/>
+  )
 }
 
 const MarketsStack = createStackNavigator({
@@ -37,16 +31,9 @@ const MarketsStack = createStackNavigator({
 })
 MarketsStack.navigationOptions = {
   tabBarLabel: 'Markets',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+  tabBarIcon: ({ tintColor }) => (
+    <AntDesign name="shoppingcart" size={22} color={colors.pWhite}/>
+  )
 }
 
 const MerchantsStack = createStackNavigator({
@@ -54,16 +41,9 @@ const MerchantsStack = createStackNavigator({
 })
 MerchantsStack.navigationOptions = {
   tabBarLabel: 'Merchants',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+  tabBarIcon: ({ tintColor }) => (
+    <AntDesign name="user" size={22} color={colors.pWhite}/>
+  )
 }
 
 const CommunicationStack = createStackNavigator({
@@ -71,28 +51,23 @@ const CommunicationStack = createStackNavigator({
 })
 CommunicationStack.navigationOptions = {
   tabBarLabel: 'Communication',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+  tabBarIcon: ({ tintColor }) => (
+    <MaterialIcons name="mail-outline" size={22} color={colors.pWhite}/>
+  )
 }
 
 const PrimaryNavConfig = {
   initialRouteName: 'HomeStack',
   lazy: 'true',
   tabBarOptions:{
-      indicatorStyle:{
-          backgroundColor: colors.pGrey
-      },
-      style:{
-          backgroundColor: colors.primary
-      }
+    showIcon: true,
+    showLabel: false,
+    indicatorStyle:{
+        backgroundColor: colors.pGrey
+    },
+    style:{
+        backgroundColor: colors.primary
+    }
   }
   
 }

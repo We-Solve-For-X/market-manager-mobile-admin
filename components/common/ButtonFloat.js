@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import { Icon } from '@shoutem/ui'
-//import Icon from '../icons/icons'
+import { isTablet } from "../../constants/platform"
 //  Config
 import layout from '../../constants/layout'
 import colors from '../../constants/colors'
@@ -21,11 +21,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        height: 50,
-        width: 50,
-        borderRadius: 25,
-        bottom: 40,
-        right: 20,
+        height: isTablet ?  50 : 38,
+        width: isTablet ?  50 : 38,
+        borderRadius: isTablet ?  25 : 19,
+        bottom: isTablet ?  40 : 20,
+        right: isTablet ?  20 : 20,
         backgroundColor: colors.pBlack,
         //borderWidth: StyleSheet.hairlineWidth,
 

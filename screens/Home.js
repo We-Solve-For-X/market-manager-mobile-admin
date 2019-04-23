@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl} from 'react-native'
 import { Text, Heading, Subtitle, Title, TextInput, Button } from '@shoutem/ui'
+import { isTablet } from "../constants/platform"
 import axios from 'axios'
 //consts & comps
 import ViewLoad from "../components/common/ViewLoad"
@@ -12,15 +13,20 @@ import { HostID } from "../config/env"
 import { asGet } from "../services/asyncStorage/asApi"
 import { ProfileCnsts } from "../services/asyncStorage/asConsts"
 import { systemAlert } from "../services/systemAlerts"
+import LineInput from "../components/common/LineInput"
+import LineView from "../components/common/LineView"
 //API
 import { overview, updateAdministrator, updatePriceZones } from "../networking/nm_sfx_home"
 import { changePassword } from "../networking/nm_sfx_auth"
+import ErrorLine from '../components/common/ErrorLine';
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: false,
+      errorMessage: null,
+      loadSignOut: false,
       loadingPw: false,
       pwErrorMessage: null,
       loadingPatch: false,
@@ -70,7 +76,7 @@ export default class Home extends React.Component {
   }
 
   render() {
-    const { host, marketsTxt, paymentsTxt, merchantsTxt, userName, cPassw, nPassw, loadingPw, pwErrorMessage, loadingPatch, patchErrorMessage, loading } = this.state
+    const { host, marketsTxt, loadSignOut, paymentsTxt, merchantsTxt, userName, cPassw, nPassw, loadingPw, pwErrorMessage, loadingPatch, patchErrorMessage, loading, errorMessage } = this.state
     const { pName, pSurname, pEmail, pRole } = this.state
     const { pbLoading, pbErrorMessage, priceB1_key, priceB1_name, priceB1_cost, priceB2_key, priceB2_name, priceB2_cost, priceB3_key, priceB3_name, priceB3_cost, priceB4_key, priceB4_name, priceB4_cost } = this.state
 
@@ -82,15 +88,13 @@ export default class Home extends React.Component {
               onRefresh={() => this._fetchData()}
             />
           } contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.dataCardTop}>
-          <Title>Hi, {pName}!</Title>
-          <Subtitle>Welcome to Irene Market Manager</Subtitle>
-        </View>
+          
+        <ErrorLine errorMessage={errorMessage}/>
 
-        {/* <View style={styles.dataCard}>
-          <Heading>Markets</Heading>
-          <Subtitle>{marketsTxt}</Subtitle>
-        </View> */}
+        <ViewSwitch style={styles.dataCardTop} hide={!pName}>
+          <Heading>Hi, {pName}.</Heading>
+          <Subtitle>Welcome to Irene Market Manager</Subtitle>
+        </ViewSwitch>
 
         <View style={styles.dataCard}>
           <Heading>Payments</Heading>
@@ -104,7 +108,7 @@ export default class Home extends React.Component {
 
         <View style={styles.dataCard}>
           <Heading >Host Details</Heading>
-          <Subtitle>Irene Market's Host Information:</Subtitle>
+          <Subtitle>Irene Market's Information:</Subtitle>
           <View style={styles.divider}/>
           <LineView title={'Name'}            value={host.name}/>
           <View style={styles.divider}/>
@@ -116,12 +120,12 @@ export default class Home extends React.Component {
           <View style={styles.divider}/>
           <LineView title={'Website'}         value={host.website}/>
           <View style={styles.divider}/>
-          <LineView title={'Address'}         value={host.address ? `${host.address.streetAddress} ${host.address.city}, ${host.address.state} - ${host.address.zipCode}` : null}/>
+          <LineView title={'Address'}         value={host.address ? `${host.address.streetAddress}\n${host.address.city}\n${host.address.state}\n${host.address.zipCode}` : null}/>
         </View>
 
         <View style={styles.dataCard}>
           <Heading>Bank Account Details</Heading>
-          <Subtitle>Bank account details into which merchants should make their payments:</Subtitle>
+          <Subtitle>Bank Account Into Which Merchants Should Make Their Payments:</Subtitle>
           <View style={styles.divider}/>
           <LineView title={'Bank'}          value={host.bankAccount ? `${host.bankAccount.bankName}` : null}/>
           <View style={styles.divider}/>
@@ -137,7 +141,8 @@ export default class Home extends React.Component {
         </View>
 
         <View style={styles.dataCard}>
-          <Heading>Price Brackets</Heading>
+          <Heading>Price Zones</Heading>
+          <Subtitle>Assignable Price Zone Descriptions and Cost:</Subtitle>
           <View style={styles.divider}/>
           <Subtitle> Price Zone A:</Subtitle>
           <LineInput title={'Description'}  value={priceB1_name} onChange={(priceB1_name) => this.setState({priceB1_name})}/>
@@ -172,13 +177,13 @@ export default class Home extends React.Component {
 
         <View style={styles.dataCard}>
           <Heading>Administrator Details</Heading>
-          <Subtitle>Your personal profile information:</Subtitle>
+          <Subtitle>Your User Profile Information:</Subtitle>
           <View style={styles.divider}/>
           <LineInput title={'Name'}     value={pName} onChange={(pName) => this.setState({pName})}/>
           <View style={styles.divider}/>
           <LineInput title={'Surname'}  value={pSurname} onChange={(pSurname) => this.setState({pSurname})}/>
           <View style={styles.divider}/>
-          <LineInput title={'Email'}    value={pEmail} onChange={(pEmail) => this.setState({pEmail})}/>
+          <LineInput title={'Email'}    value={pEmail} maxLength={50} onChange={(pEmail) => this.setState({pEmail})}/>
           <View style={styles.divider}/>
           <LineInput title={'Role'}     value={pRole} onChange={(pRole) => this.setState({pRole})}/>
           <View style={styles.divider}/>
@@ -199,9 +204,9 @@ export default class Home extends React.Component {
 
         <View style={styles.dataCard}>
           <Heading>Sign-In Credentials</Heading>
-          <Subtitle>Change your sign-in credentials:</Subtitle>
+          <Subtitle>Change User Credentials:</Subtitle>
           <View style={styles.divider}/>
-          <LineView title={'Username'}      value={userName} />
+          <LineView title={'Username'}      value={userName} maxLength={50}/>
           <View style={styles.divider}/>
           <LineInput title={'Password'}     value={cPassw} onChange={(cPassw) => this.setState({cPassw})} secureTextEntry={true} placeholder={'...current password'}/>
           <View style={styles.divider}/>
@@ -220,6 +225,19 @@ export default class Home extends React.Component {
             </ViewLoad>
           </Button>   
           </View> 
+        </View>
+
+        <View style={styles.dataCard}>
+          <View style={styles.buttonContainer}>
+          <Button 
+            style={styles.button} 
+            onPress={() => loadSignOut ? null : this._signOutAsync()}>
+            <Text>Sign Out</Text>
+            <ViewLoad hide={loadSignOut}>
+              <AntDesign name="logout" size={22} />
+            </ViewLoad>
+          </Button> 
+          </View>
         </View>
 
         </ScrollView>
@@ -324,6 +342,11 @@ export default class Home extends React.Component {
     }
   }
 
+  _signOutAsync = () => {
+    //this.setState({ loadSignOut: true })
+    this.props.navigation.navigate('SignIn')
+  }
+
   _fetchData = async () => {
     await this.setState({ loading: true })
     let adminId = this.state.administratorId
@@ -352,7 +375,8 @@ export default class Home extends React.Component {
         priceB4_key: 'D',
         priceB4_name: host.priceBrackets.find(pz => pz.key === 'D').name,
         priceB4_cost: host.priceBrackets.find(pz => pz.key === 'D').cost,
-        loading:      false
+        loading:      false,
+        errorMessage: null
       }) 
     } else {
       await this.setState({
@@ -366,39 +390,6 @@ export default class Home extends React.Component {
     title: 'Home',
     header: null
   }
-}
-
-const LineView = ({title, value}) => {
-  return(
-    <View style={styles.lineContainer}>
-      <View style={styles.titleBox}>
-        <Text>{title}: </Text>
-      </View>
-      <TextInput
-        style={styles.textInput}
-        value={value}
-        editable={false}
-      />
-    </View>
-  )
-}
-
-const LineInput = ({title, value, onChange, placeholder, secureTextEntry}) => {
-  return(
-    <View style={styles.lineContainer}>
-      <View style={styles.titleBox}>
-        <Text>{title}: </Text>
-      </View>
-      <TextInput
-        placeholder={placeholder}
-        onChangeText={onChange}
-        style={styles.textInput}
-        //maxLength={28}
-        value={value}
-        secureTextEntry={secureTextEntry}
-      />
-    </View>
-  )
 }
 
 const styles = StyleSheet.create({
@@ -465,6 +456,19 @@ const styles = StyleSheet.create({
   },
   titleBox: {
     width: 120,
-    marginLeft: 12
+    marginLeft: 5
+  },
+  lineViewText: {
+    flex: 1,
+    paddingHorizontal: 5, 
+    paddingVertical: 10, 
+    justifyContent: 'flex-start'
+  },
+  lineInputText: {
+    flex: 1,
+    paddingHorizontal: 5, 
+    paddingVertical: 10, 
+    justifyContent: 'flex-start', 
+    height: 40
   }
 });

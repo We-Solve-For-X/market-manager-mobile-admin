@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, ScrollView, Modal, ActivityIndicator, RefreshControl } from 'react-native'
+import { View, StyleSheet, FlatList, ScrollView, Modal, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
+import { isTablet } from "../constants/platform"
 import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
-import DatePicker from 'react-native-datepicker'
+import LineInput from "../components/common/LineInput"
+import LineView from "../components/common/LineView"
 import SearchBar from '../components/common/SearchBar'
 import AttendanceCard from '../components/markets/AttendanceCard'
 import AttendanceAddCard from '../components/markets/AttendanceAddCard'
@@ -64,9 +66,11 @@ export default class MarketDetails extends React.Component {
           <View style={styles.mdInner}>
           <View style={styles.mdHide}>
             <Title style={styles.title}>Add Merchants</Title>
-            <Button onPress={() => this._toggleModal(false)}>
+            <Button style={styleConsts.button} onPress={() => this._toggleModal(false)}>
               <Text>Done</Text>
-              <MaterialIcons name={'done'} size={22}/>
+              <ViewSwitch hide={!isTablet}>
+                <MaterialIcons name={'done'} size={22}/>
+              </ViewSwitch>
             </Button>
           </View>
           <ScrollView 
@@ -113,163 +117,55 @@ export default class MarketDetails extends React.Component {
           <Title style={styles.title}>Market Information</Title>
           { confirmDelete ? 
           (<View style={styles.deleteCon2}>
-            <Button style={styles.button} onPress={() => deleting ? null : this._deleteMarket()}>
-              <Text>CONFIRM</Text>
+            <Button style={styleConsts.button} onPress={() => deleting ? null : this._deleteMarket()}>
+              <ViewSwitch hide={!isTablet}>
+                <Text>CONFIRM</Text>
+              </ViewSwitch>
               {deleting ? <ActivityIndicator/> : <AntDesign name="check" size={22} />}
             </Button>
-            <Button style={styles.button} onPress={() => deleting ? null : this.setState({confirmDelete: false})}>
-              <Text>CANCELL</Text>
+            <Button style={styleConsts.button} onPress={() => deleting ? null : this.setState({confirmDelete: false})}>
+              <ViewSwitch hide={!isTablet}>
+                <Text>CANCELL</Text>
+              </ViewSwitch>
               <AntDesign name="close" size={22} />
             </Button>
           </View>)
           : (<View>
             <Button style={styles.button} onPress={() => this.setState({confirmDelete: true})}>
-              <Text>DELETE</Text>
-              <MaterialCommunityIcons name="delete-outline" size={25} color={colors.pBlack} />
+              <ViewSwitch hide={!isTablet}>
+                <Text>DELETE</Text>
+              </ViewSwitch>
+              <MaterialCommunityIcons name="delete-outline" size={25} color={colors.pBlack} style={{paddingHorizontal: 0, marginHorizontal: 0}} />
             </Button>
           </View>) }
         </View>
         
-        <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Name: </Text>
-            </View>
-            <TextInput
-              placeholder={'Short name for the market instance'}
-              //onChangeText={(name) => this.setState({name})}
-              style={styles.textInput}
-              maxLength={28}
-              value={name}
-              editable={false}
-            />
-          </View>
-
+          <LineView title={'Name'}    value={name}/>
           <View style={styles.divider}/>
-
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Description: </Text>
-            </View>
-            <TextInput
-              placeholder={'Description of the market instance'}
-              onChangeText={(description) => this.setState({description})}
-              style={styles.textInput}
-              maxLength={28}
-              value={description}
-              editable={false}
-            />
-          </View>
+          <LineView title={'Description'}    value={description}/>
           <View style={styles.divider}/>
-
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Attendances: </Text>
-            </View>
-            <TextInput
-              placeholder={'No attendance count'}
-              //onChangeText={(description) => this.setState({description})}
-              style={styles.textInput}
-              maxLength={28}
-              value={`${nAttendances}`}
-              editable={false}
-            />
-          </View>
+          <LineView title={'Attendances'}    value={`${nAttendances}`}/>
           <View style={styles.divider}/>
-
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Payments: </Text>
-            </View>
-            <TextInput
-              placeholder={'Description of the market instance'}
-              onChangeText={(description) => this.setState({description})}
-              style={styles.textInput}
-              maxLength={28}
-              value={`${nInvPayed} Payed, ${nInvOuts} Outstanding, ${nInvSubm} Awaiting Review `}
-              editable={false}
-            />
-          </View>
+          <LineView title={'Payments'}    value={`${nInvPayed} Payed, ${nInvOuts} Outstanding, ${nInvSubm} Awaiting Review `}/>
           <View style={styles.divider}/>
-
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Market Code: </Text>
-            </View>
-            <TextInput
-              onChangeText={(description) => this.setState({description})}
-              style={styles.textInput}
-              maxLength={28}
-              value={unCode ? `${unCode}` : null}
-              editable={false}
-            />
-          </View>
+          <LineView title={'Market Code'}    value={unCode ? `${unCode}` : null}/>
           <View style={styles.divider}/>
-
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Setup Start: </Text>
-            </View>
-            <TextInput
-              placeholder={'Description of the market instance'}
-              style={styles.textInput}
-              maxLength={28}
-              value={moment(setupStart).format("dddd Do MMM YYYY HH:mm")}
-              editable={false}
-            />
-          </View>
+          <LineView title={'Setup Start'}    value={moment(setupStart).format("dddd Do MMM YYYY HH:mm")}/>
           <View style={styles.divider}/>
-
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Market Start: </Text>
-            </View>
-            <TextInput
-              placeholder={'Description of the market instance'}
-              onChangeText={(description) => this.setState({description})}
-              style={styles.textInput}
-              maxLength={28}
-              value={moment(marketStart).format("dddd Do MMM YYYY HH:mm")}
-              editable={false}
-            />
-          </View>
+          <LineView title={'Market Start'}    value={moment(marketStart).format("dddd Do MMM YYYY HH:mm")}/>
           <View style={styles.divider}/>
-
-          <View style={styles.lineContainer}>
-            <View style={styles.titleBox}>
-              <Text>Market End: </Text>
-            </View>
-            <TextInput
-              placeholder={'Description of the market instance'}
-              onChangeText={(description) => this.setState({description})}
-              style={styles.textInput}
-              maxLength={28}
-              value={moment(marketEnd).format("dddd Do MMM YYYY HH:mm")}
-              editable={false}
-            />
-          </View>
+          <LineView title={'Market End'}    value={moment(marketEnd).format("dddd Do MMM YYYY HH:mm")}/>
           <View style={styles.divider}/>
-
-          <View style={[styles.lineContainer, {height: 110}]}>
-            <View style={styles.titleBox}>
-              <Text>Take Note: </Text>
-            </View>
-            <TextInput
-              placeholder={'Description of the market instance'}
-              onChangeText={(description) => this.setState({description})}
-              style={styles.textInput}
-              maxLength={28}
-              value={takeNote}
-              editable={false}
-            />
-          </View>
-
+          <LineView title={'Take Note'}    value={takeNote}/>
           <View style={[styles.divider, {marginBottom: 8}]}/>
 
           <View style={styles.addCont}>
             <Title style={styles.title}>Attendances</Title>
-            <Button style={styles.button} onPress={() => this._toggleModal(true)}>
-              <Text>ADD</Text>
-              <Feather name="user-plus" size={22}/>
+            <Button style={styleConsts.button} onPress={() => this._toggleModal(true)}>
+              <ViewSwitch hide={!isTablet}>
+                <Text>ADD</Text>
+              </ViewSwitch>
+              <AntDesign name="adduser" size={25}/>
             </Button>
           </View>
 
@@ -417,7 +313,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1, 
-    padding: 80, 
+    padding: isTablet ? 80 : 16, 
     backgroundColor: colors.pBlackTransp, 
     flexDirection: 'column', 
     justifyContent: 'flex-start'
@@ -433,7 +329,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     alignItems: 'center', 
     backgroundColor: colors.primary, 
-    width: '100%', padding: 10
+    width: '100%', 
+    padding: 10
   },
   title: {
     color: colors.pWhite
@@ -464,7 +361,12 @@ const styles = StyleSheet.create({
     padding: 10
   },
   button: { 
-    marginHorizontal: 15, 
+    //height: 28,
+    paddingHorizontal: 7, 
+    height: 38,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     borderColor: colors.secondary, 
     ...styleConsts.buttonBorder
   },

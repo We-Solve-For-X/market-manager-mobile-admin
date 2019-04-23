@@ -5,6 +5,7 @@ import CommunicCard from '../components/communication/CommunicCard'
 import axios from 'axios'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 //consts & comps
+import ErrorLine from "../components/common/ErrorLine"
 import NoContent from "../components/common/NoContent"
 import Updater from "../components/common/Updater"
 import colors from '../constants/colors'
@@ -35,13 +36,14 @@ export default class Communication extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { messages, loading, shouldRefresh } = this.state
+    const { messages, loading, shouldRefresh, errorMessage } = this.state
     return (
       <View style={styles.container}>
-        <Updater shouldRefresh={shouldRefresh} onRefresh={this._fetchData} doneRefresh={() => this.setState({shouldRefresh: false})} />
+        <Updater shouldRefresh={shouldRefresh} onRefresh={() => this._fetchData()} doneRefresh={() => this.setState({shouldRefresh: false})} />
         <ScrollView 
           refreshControl={ <RefreshControl refreshing={loading} nRefresh={() => this._fetchData()} />} 
         >
+          <ErrorLine errorMessage={errorMessage}/>
           <Button 
             style={styles.addButton} 
             onPress={ 
@@ -79,7 +81,8 @@ export default class Communication extends React.Component {
     if (response.code == 200) {
       this.setState({
         messages: response.data,
-        loading: false
+        loading: false,
+        errorMessage: null
       }) 
     } else {
       this.setState({
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 10,
-    backgroundColor: colors.pViewBg,
+    backgroundColor: colors.pViewBg
   },
   addButton: {
     marginVertical: 18, 

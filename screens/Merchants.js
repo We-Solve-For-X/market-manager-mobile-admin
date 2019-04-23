@@ -4,6 +4,7 @@ import { Heading, Subtitle } from '@shoutem/ui'
 import SearchBar from '../components/common/SearchBar'
 import axios from 'axios'
 //consts & comps
+import ErrorLine from "../components/common/ErrorLine"
 import ViewSwitch from "../components/common/ViewSwitch"
 import MerchantCard from '../components/merchants/MerchantCard'
 import NoContent from "../components/common/NoContent"
@@ -39,7 +40,7 @@ export default class Merchants extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const {searchInput, nPending, pending, nApproved, approved, approvedDisp, loading } = this.state
+    const {searchInput, nPending, pending, nApproved, approved, approvedDisp, loading, errorMessage } = this.state
     return (
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer} 
@@ -50,11 +51,11 @@ export default class Merchants extends React.Component {
             />
           }
           >
-
-          <ViewSwitch hide={nPending == 0}>
+          <ErrorLine errorMessage={errorMessage}/>
+          <ViewSwitch hide={nPending == 0 || nPending == null}>
             <View style={styles.tileCont}>
               <Heading>Merchant Requests</Heading>
-              <Subtitle>You have {nPending} pending merchant requests</Subtitle>
+              <Subtitle>There are {nPending} merchant requests pending</Subtitle>
             </View>
             <FlatList
               data={pending}
@@ -66,7 +67,7 @@ export default class Merchants extends React.Component {
 
           <View style={styles.tileCont}>
             <Heading>All Merchant</Heading>
-            <Subtitle>You have {nApproved} registered merchants</Subtitle>
+            <Subtitle>There are {nApproved ? nApproved : '(?)'} approved merchants on the system</Subtitle>
           </View>
           <SearchBar
             placeholder={'Find a Merchant'} 
@@ -124,7 +125,8 @@ export default class Merchants extends React.Component {
         nApproved: response.data.nApproved,
         pending: response.data.pending,
         approved: response.data.approved,
-        approvedDisp: response.data.approved
+        approvedDisp: response.data.approved,
+        errorMessage: null
       }) 
     } else {
       this.setState({
