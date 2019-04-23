@@ -1,8 +1,7 @@
 import { isProd } from '../config/env'
 import axios from 'axios'
 
-const BASE_URL = isProd ? 'https://surf-compass-prod.herokuapp.com' : 'http://localhost:8192'
-const OPENCAGE_URL = 'https://api.opencagedata.com/geocode/v1'
+const BASE_URL = isProd ? 'https://sfx-api-markman-prod.herokuapp.com' : 'http://localhost:8192'
 
 export function get(path, token) {
   //console.log('url', `${BASE_URL}/${path}`)
