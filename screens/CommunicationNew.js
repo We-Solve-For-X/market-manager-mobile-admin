@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, KeyboardAvoidingView } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, DropDownMenu, TextInput } from '@shoutem/ui'
 import { Ionicons } from '@expo/vector-icons'
@@ -46,7 +46,7 @@ export default class CommunicationNew extends React.Component {
     const { navigation } = this.props
     const { toOptions, toSelected, fromName, fromId, topic, text, sending, loading } = this.state
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={20} style={styles.container}>
         <View style={styles.topFields}>
 
           <View style={styles.lineContainer}>
@@ -109,7 +109,7 @@ export default class CommunicationNew extends React.Component {
         </View>
 
         <ButtonFloat navigation={navigation}/>
-      </View>
+      </KeyboardAvoidingView>
     )
   }
 

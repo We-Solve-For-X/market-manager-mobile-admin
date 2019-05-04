@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, ScrollView, ActivityIndicator } from 'react-native'
+import { View, StyleSheet, FlatList, ScrollView, KeyboardAvoidingView } from 'react-native'
 import { isTablet } from "../constants/platform";
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
@@ -61,7 +61,7 @@ export default class MarketAdd extends React.Component {
     const { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, attendancesDisp, loading } = this.state
     return (
       <View style={styles.container}>
-
+      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={80}>
       <ScrollView>
 
         <View style={styles.containerTop}>
@@ -199,12 +199,13 @@ export default class MarketAdd extends React.Component {
               <Title style={{color: colors.pWhite}}>Attendances</Title>
             </View>
           </View>
-
+          
           <SearchBar
             placeholder={'Find a Merchant'} 
             onChangeText={ (searchInput) => this._applySearch(searchInput)}
             value={searchInput}
           />
+
           <FlatList
             data={attendancesDisp}
             contentContainerStyle={styles.scrollContainer}
@@ -217,6 +218,7 @@ export default class MarketAdd extends React.Component {
             //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
           />
         </ScrollView>
+        </KeyboardAvoidingView>
         <ButtonFloat navigation={navigation}/>
       </View>
     )

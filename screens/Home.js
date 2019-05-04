@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl} from 'react-native'
+import { View, StyleSheet, ScrollView, RefreshControl, KeyboardAvoidingView } from 'react-native'
 import { Text, Heading, Subtitle, Title, TextInput, Button } from '@shoutem/ui'
 import { isTablet } from "../constants/platform"
 import axios from 'axios'
@@ -83,6 +83,7 @@ export default class Home extends React.Component {
 
     return (
     <View style={styles.container}>
+    <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={130} >
       <ScrollView 
         refreshControl={
           <RefreshControl
@@ -107,7 +108,7 @@ export default class Home extends React.Component {
           <Subtitle>{merchantsTxt}</Subtitle>
         </ViewSwitch>
 
-        <View style={styles.dataCard}>
+        <ViewSwitch style={styles.dataCard} hide={!host.name}>
           <Heading >Host Details</Heading>
           <Subtitle>Irene Market's Information:</Subtitle>
           <View style={styles.divider}/>
@@ -122,9 +123,9 @@ export default class Home extends React.Component {
           <LineView title={'Website'}         value={host.website}/>
           <View style={styles.divider}/>
           <LineView title={'Address'}         value={host.address ? `${host.address.streetAddress}\n${host.address.city}\n${host.address.state}\n${host.address.zipCode}` : null}/>
-        </View>
+        </ViewSwitch>
 
-        <View style={styles.dataCard}>
+        <ViewSwitch style={styles.dataCard} hide={!host.name}>
           <Heading>Bank Account Details</Heading>
           <Subtitle>Bank Account Into Which Merchants Should Make Their Payments:</Subtitle>
           <View style={styles.divider}/>
@@ -139,28 +140,26 @@ export default class Home extends React.Component {
           <LineView title={'Branch Name'}   value={host.bankAccount ? `${host.bankAccount.branchName}` : null}/>
           <View style={styles.divider}/>
           <LineView title={'Branch Code'}   value={host.bankAccount ? `${host.bankAccount.branchCode}` : null}/>
-        </View>
+        </ViewSwitch>
 
-        <View style={styles.dataCard}>
+        <ViewSwitch style={styles.dataCardDark} hide={!host.name}>
           <Heading>Price Zones</Heading>
           <Subtitle>Assignable Price Zone Descriptions and Cost:</Subtitle>
-          <View style={styles.divider}/>
           <Subtitle> Price Zone A:</Subtitle>
           <LineInput title={'Description'}  value={priceB1_name} onChange={(priceB1_name) => this.setState({priceB1_name})}/>
           <LineInput title={'Cost'}         value={`${priceB1_cost}`} onChange={(priceB1_cost) => this.setState({priceB1_cost})}/>
-          <View style={styles.divider}/>
+          {/* <View style={styles.divider}/> */}
           <Subtitle> Price Zone B:</Subtitle>
           <LineInput title={'Description'}  value={priceB2_name} onChange={(priceB2_name) => this.setState({priceB2_name})}/>
           <LineInput title={'Cost'}         value={`${priceB2_cost}`} onChange={(priceB2_cost) => this.setState({priceB2_cost})}/>
-          <View style={styles.divider}/>
+          {/* <View style={styles.divider}/> */}
           <Subtitle> Price Zone C:</Subtitle>
           <LineInput title={'Description'}  value={priceB3_name} onChange={(priceB3_name) => this.setState({priceB3_name})}/>
           <LineInput title={'Cost'}         value={`${priceB3_cost}`} onChange={(priceB3_cost) => this.setState({priceB3_cost})}/>
-          <View style={styles.divider}/>
+          {/* <View style={styles.divider}/> */}
           <Subtitle> Price Zone D:</Subtitle>
           <LineInput title={'Description'}  value={priceB4_name} onChange={(priceB4_name) => this.setState({priceB4_name})}/>
           <LineInput title={'Cost'}         value={`${priceB4_cost}`} onChange={(priceB4_cost) => this.setState({priceB4_cost})}/>
-          <View style={styles.divider}/>
           <ViewSwitch hide={pbErrorMessage == null}>
               <Text style={styles.errorText}>{pbErrorMessage}</Text>
           </ViewSwitch>
@@ -174,12 +173,11 @@ export default class Home extends React.Component {
             </ViewLoad>
           </Button>   
           </View> 
-        </View>
+        </ViewSwitch>
 
-        <View style={styles.dataCard}>
+        <ViewSwitch style={styles.dataCardDark} hide={!host.name}>
           <Heading>Administrator Details</Heading>
           <Subtitle>Your User Profile Information:</Subtitle>
-          <View style={styles.divider}/>
           <LineInput title={'Name'}     value={pName} onChange={(pName) => this.setState({pName})}/>
           <View style={styles.divider}/>
           <LineInput title={'Surname'}  value={pSurname} onChange={(pSurname) => this.setState({pSurname})}/>
@@ -187,7 +185,6 @@ export default class Home extends React.Component {
           <LineInput title={'Email'}    value={pEmail} maxLength={50} onChange={(pEmail) => this.setState({pEmail})}/>
           <View style={styles.divider}/>
           <LineInput title={'Role'}     value={pRole} onChange={(pRole) => this.setState({pRole})}/>
-          <View style={styles.divider}/>
           <ViewSwitch hide={pwErrorMessage == null}>
               <Text style={styles.errorText}>{patchErrorMessage}</Text>
           </ViewSwitch>
@@ -201,18 +198,16 @@ export default class Home extends React.Component {
             </ViewLoad>
           </Button>   
           </View> 
-        </View>
+        </ViewSwitch>
 
-        <View style={styles.dataCard}>
+        <ViewSwitch style={styles.dataCardDark} hide={!host.name}>
           <Heading>Sign-In Credentials</Heading>
           <Subtitle>Change User Credentials:</Subtitle>
-          <View style={styles.divider}/>
           <LineView title={'Username'}      value={userName} maxLength={50}/>
           <View style={styles.divider}/>
           <LineInput title={'Password'}     value={cPassw} onChange={(cPassw) => this.setState({cPassw})} secureTextEntry={true} placeholder={'...current password'}/>
           <View style={styles.divider}/>
           <LineInput title={'New Password'} value={nPassw} onChange={(nPassw) => this.setState({nPassw})} secureTextEntry={true} placeholder={'...new password'}/>
-          <View style={styles.divider}/>
           <ViewSwitch hide={pwErrorMessage == null}>
               <Text style={styles.errorText}>{pwErrorMessage}</Text>
           </ViewSwitch>
@@ -226,9 +221,9 @@ export default class Home extends React.Component {
             </ViewLoad>
           </Button>   
           </View> 
-        </View>
+        </ViewSwitch>
 
-        <View style={styles.dataCard}>
+        <ViewLoad style={styles.dataCardDark} hide={loading}>
           <View style={styles.buttonContainer}>
           <Button 
             style={styles.button} 
@@ -239,9 +234,10 @@ export default class Home extends React.Component {
             </ViewLoad>
           </Button> 
           </View>
-        </View>
+        </ViewLoad>
 
         </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     )
   }
@@ -423,6 +419,14 @@ const styles = StyleSheet.create({
     borderRadius: 5, 
     width: '100%', 
     backgroundColor: colors.pWhite, 
+    ...styleConsts.viewShadow
+  },
+  dataCardDark: { 
+    margin: 10, 
+    padding: 5, 
+    borderRadius: 5, 
+    width: '100%', 
+    backgroundColor: colors.secondaryLight, 
     ...styleConsts.viewShadow
   },
   scrollContainer: {

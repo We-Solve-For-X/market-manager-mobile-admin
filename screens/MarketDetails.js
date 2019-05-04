@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, ScrollView, Modal, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, FlatList, ScrollView, Modal, ActivityIndicator, RefreshControl, KeyboardAvoidingView } from 'react-native'
 import ButtonFloat from '../components/common/ButtonFloat'
 import { isTablet } from "../constants/platform"
 import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
@@ -102,7 +102,7 @@ export default class MarketDetails extends React.Component {
         </Modal>
 
 
-
+      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={80}>
       <ScrollView 
         refreshControl={
           <RefreshControl
@@ -190,6 +190,7 @@ export default class MarketDetails extends React.Component {
             />
 
         </ScrollView>
+        </KeyboardAvoidingView>
         <ButtonFloat navigation={navigation}/>
       </View>
     )

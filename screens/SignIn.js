@@ -12,6 +12,8 @@ import ViewLoad from "../components/common/ViewLoad"
 //consts & comps
 import colors from '../constants/colors'
 import layout from '../constants/layout'
+import { systemAlert } from "../services/systemAlerts"
+import { validateEmail } from "../services/validators";
 //API
 import { signinAdmin } from "../networking/nm_sfx_auth"
 import { asSetProfile } from "../services/asyncStorage/asApi"
@@ -47,8 +49,8 @@ class SignIn extends React.Component {
       style={styles.container}
       resizeMode={'cover'}
       > 
-      <KeyboardAvoidingView behavior="padding" style={styles.keybCont} >
-          <View style={styles.subCont}>
+        <View style={styles.subCont}>
+          <KeyboardAvoidingView behavior="padding" style={styles.keybCont} keyboardVerticalOffset={20} >
             
             <View style={styles.headingCont}>
               <Text style={styles.title}>Market Manager</Text>
@@ -79,7 +81,9 @@ class SignIn extends React.Component {
               onChangeText={(password) => this.setState({password})}
             />
             </View>
+            </KeyboardAvoidingView>
 
+            <View style={styles.buttonCont}>
             <View style={styles.signInCont}>
               <Button 
                 style={styles.button} 
@@ -91,17 +95,31 @@ class SignIn extends React.Component {
               </Button>
               <Text style={styles.errorMesg}>{errorMessage}</Text>
             </View>
+            </View>
+
           </View>
-        </KeyboardAvoidingView>
+        
       </ImageBackground>
     )
   }
 
   _signInAsync = async () => {
     this.setState({ signingIn: true, errorMessage: null })
-    let AuthIn = {userType: 'Administrator', username: this.state.email, password: this.state.password}
-    
+
+    let { email, password } = this.state
+    if(email.length < 2 ||  password.length < 2) {
+      systemAlert('Incomplete Info', 'Please complete both fields before submitting your profile.')
+      this.setState({ signingIn: false  })
+      return
+    } else if (!validateEmail(email)) {
+      systemAlert('Invalid Email', 'Please enter a valid email address.')
+      this.setState({ signingIn: false  })
+      return
+    }
+
+    let AuthIn = {userType: 'Administrator', username: email, password: password}
     const response = await signinAdmin(AuthIn, this.signal.token)
+
     if (response.code == 200) {
       const res = await asSetProfile(response.data, AuthIn.username) 
       if(res == false){
@@ -140,27 +158,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.pViewBg,
     opacity: 0.99
   },
-  keybCont: {
-    width: '100%', 
-    height: '100%', 
-    flexDirection: 'column', 
-    justifyContent: 'center', 
-    alignItems: 'center'
-  },
   subCont: {
-    width: '70%', 
-    height: '85%',
+    width: '90%', 
+    height: '94%',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     backgroundColor: colors.pBlackTransp, 
     paddingHorizontal: '4%', 
     borderRadius: 5
   },
-  signInCont: {
-    flex: 3, 
+  keybCont: {
+    flex: 1,
+    width: '100%', 
     flexDirection: 'column', 
     justifyContent: 'flex-start', 
-    alignItems: 'center', 
+    alignItems: 'center',
+    paddingBottom: 5
+  },
+  signInCont: {
+    flex: 3, 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'flex-start', 
     paddingTop: 10
   },
   headingCont: {
@@ -183,14 +202,23 @@ const styles = StyleSheet.create({
   },
   textInCont: {
     flex: 2, 
+    width: '100%',
     flexDirection: 'column', 
-    justifyContent: 'space-around'
+    justifyContent: 'flex-start'
+  },
+  buttonCont: {
+    height: 135
   },
   button: {
     marginVertical: 10, 
     marginHorizontal: 15, 
-    ...styleConsts.buttonBorder, 
     width: 115
+  },
+  buttonB: {
+    marginVertical: 10, 
+    marginHorizontal: 15, 
+    backgroundColor: colors.secondary,
+    width: 97
   },
   errorMesg: {
     fontSize: 15, 

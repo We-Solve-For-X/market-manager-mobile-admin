@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, FlatList, RefreshControl } from 'react-native'
+import { View, StyleSheet, ScrollView, FlatList, RefreshControl, KeyboardAvoidingView } from 'react-native'
 import { Heading, Subtitle } from '@shoutem/ui'
 import SearchBar from '../components/common/SearchBar'
 import axios from 'axios'
@@ -43,6 +43,7 @@ export default class Merchants extends React.Component {
     const {searchInput, nPending, pending, nApproved, approved, approvedDisp, loading, errorMessage } = this.state
     return (
       <View style={styles.container}>
+      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={100}>
         <ScrollView contentContainerStyle={styles.scrollContainer} 
           refreshControl={
             <RefreshControl
@@ -85,6 +86,7 @@ export default class Merchants extends React.Component {
             ListEmptyComponent={<NoContent refresh={true}/>}
             />
         </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     )
   }
