@@ -57,7 +57,7 @@ CommunicationStack.navigationOptions = {
 }
 
 const PrimaryNavConfig = {
-  initialRouteName: 'HomeStack',
+  initialRouteName: 'MarketsStack',
   lazy: 'true',
   tabBarOptions:{
     showIcon: true,

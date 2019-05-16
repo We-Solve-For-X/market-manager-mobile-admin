@@ -11,15 +11,18 @@ import AttendanceAddCard from '../components/markets/AttendanceAddCard'
 import { Feather, MaterialCommunityIcons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import axios from 'axios'
 import moment from 'moment'
+import { asGet } from "../services/asyncStorage/asApi"
+import { ProfileCnsts } from "../services/asyncStorage/asConsts"
 //consts & comps
 import ViewSwitch from "../components/common/ViewSwitch"
 import NoContent from "../components/common/NoContent"
 import colors from '../constants/colors'
 import styleConsts from '../constants/styleConsts'
+import { systemAlert } from "../services/systemAlerts";
 import layout from '../constants/layout'
 import { HostID } from "../config/env"
 //API
-import { view, loadAdd, deleteMarket } from "../networking/nm_sfx_markets"
+import { view, loadAdd, deleteMarket, dataMail } from "../networking/nm_sfx_markets"
 
 export default class MarketDetails extends React.Component {
   constructor(props){
@@ -33,6 +36,8 @@ export default class MarketDetails extends React.Component {
       newAttendancesDisp: [],
       confirmDelete: false,
       deleting: false,
+      confirmDownload: false,
+      downloading: false,
       addModal: false,
       searchInput: '',
       modalSearchInput: ''
@@ -52,7 +57,7 @@ export default class MarketDetails extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { confirmDelete, market, searchInput, addModal, modalSearchInput, newAttendancesDisp, deleting, loading, attendancesDisp } = this.state
+    const { confirmDelete, confirmDownload, downloading, market, searchInput, addModal, modalSearchInput, newAttendancesDisp, deleting, loading, attendancesDisp } = this.state
     const { id, unCode, name, description, takeNote, setupStart, marketStart, marketEnd, standPrices, nAttendances, nInvPayed, nInvOuts, nInvSubm  } = market
 
     return (
@@ -139,7 +144,7 @@ export default class MarketDetails extends React.Component {
             </Button>
           </View>) }
         </View>
-        
+
           <LineView title={'Name'}    value={name}/>
           <View style={styles.divider}/>
           <LineView title={'Description'}    value={description}/>
@@ -157,7 +162,34 @@ export default class MarketDetails extends React.Component {
           <LineView title={'Market End'}    value={moment(marketEnd).format("dddd Do MMM YYYY HH:mm")}/>
           <View style={styles.divider}/>
           <LineView title={'Take Note'}    value={takeNote}/>
-          <View style={[styles.divider, {marginBottom: 8}]}/>
+          <View style={styles.divider}/>
+          {/* <View style={[styles.divider, {marginBottom: 8}]}/> */}
+
+          <View style={{flexDirection: 'row', justifyContent: 'flex-end', width: '100%', padding: 14}}>
+          { confirmDownload ? 
+          (<View style={styles.deleteCon2}>
+            <Button style={styleConsts.button} onPress={() => downloading ? null : this._emailMarket()}>
+              <ViewSwitch hide={!isTablet}>
+                <Text>CONFIRM</Text>
+              </ViewSwitch>
+              {downloading ? <ActivityIndicator/> : <AntDesign name="check" size={22} />}
+            </Button>
+            <Button style={styleConsts.button} onPress={() => downloading ? null : this.setState({confirmDownload: false})}>
+              <ViewSwitch hide={!isTablet}>
+                <Text>CANCELL</Text>
+              </ViewSwitch>
+              <AntDesign name="close" size={22} />
+            </Button>
+          </View>)
+          : (<View>
+            <Button style={styles.button} onPress={() => this.setState({confirmDownload: true})}>
+              <ViewSwitch hide={!isTablet}>
+                <Text>DOWNLOAD</Text>
+              </ViewSwitch>
+              <MaterialCommunityIcons name="download" size={25} color={colors.pBlack} style={{paddingHorizontal: 0, marginHorizontal: 0}} />
+            </Button>
+          </View>) }
+        </View>
 
           <View style={styles.addCont}>
             <Title style={styles.title}>Attendances</Title>
@@ -214,7 +246,6 @@ export default class MarketDetails extends React.Component {
     if(expand){
       let id = this.state.id
       const response = await loadAdd(HostID, id, this.signal.token)
-      console.log(response)
       if (response.code == 200) {
         await this.setState({
           newAttendances: response.data.attendances,
@@ -255,6 +286,26 @@ export default class MarketDetails extends React.Component {
      })
      //FIXME: prevent reload every time modal is hiden to optimise data transfer
      this.setState({newAttendancesDisp})
+  }
+
+  _emailMarket = async () => {
+    let id = this.state.id
+    let administratorId = await asGet(ProfileCnsts.adminstId)
+    this.setState({ downloading: true })
+    const response = await dataMail(id, administratorId, this.signal.token)
+    if (response.code == 200) {
+      await this.setState({
+        downloading: false,
+        confirmDownload: false
+      })
+      systemAlert('Data Download Success', 'The requested market report was delivered to your specified email address.')
+    } else {
+      await this.setState({
+        errorMessage: response.data,
+        downloading: false
+      })
+    }
+
   }
 
   _deleteMarket = async () => {

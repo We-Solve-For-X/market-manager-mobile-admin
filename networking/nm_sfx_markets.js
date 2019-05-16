@@ -111,8 +111,8 @@ export async function view(marketId = '', token) {
 
 
 // ???
-export async function dataMail(marketId = '', token) {
-    const url =  MARKMAN_BASE_URL + `/${MID_URL}/dataMail?marketId=${marketId}`
+export async function dataMail(marketId = '', administratorId = '', token) {
+    const url =  MARKMAN_BASE_URL + `/${MID_URL}/email/${marketId}/${administratorId}`
     const packDataPromise = get(url, token)
 
     return packageResponse(packDataPromise)

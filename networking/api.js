@@ -11,7 +11,7 @@ export function get(path, token) {
       'Content-Type': 'application/json',
       Accept: 'application/json, text/plain, */*'
     },
-    timeout: 9000,
+    timeout: 12000,
     cancelToken: token
   })
 }
@@ -25,7 +25,7 @@ export function post(path, body, token) {
       'Content-Type': 'application/json',
       Accept: 'application/json, text/plain, */*',
     },
-    timeout: 9000,
+    timeout: 12000,
     cancelToken: token,
   })
 }
@@ -39,7 +39,7 @@ export function patch(path, body, token) {
       'Content-Type': 'application/json',
       Accept: 'application/json, text/plain, */*',
     },
-    timeout: 9000,
+    timeout: 12000,
     cancelToken: token,
   })
 }
