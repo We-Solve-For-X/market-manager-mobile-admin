@@ -6,7 +6,7 @@
     "privacy": "public",
     "sdkVersion": "31.0.0",
     "platforms": ["ios"],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "primaryColor": "#404A58",
@@ -26,7 +26,7 @@
     "ios": {
       "bundleIdentifier": "com.solveforx.marketmanager",
       "supportsTablet": true,
-      "buildNumber": "1.0.1",
+      "buildNumber": "1.0.2",
       "infoPlist": {
         "UIBackgroundModes": [
           "location",

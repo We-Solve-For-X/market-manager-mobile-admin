@@ -211,10 +211,9 @@ export default class MarketAdd extends React.Component {
           />
 
           <FlatList
-            //data={attendancesDisp}
             data={this._applySearch(attendances)}
             contentContainerStyle={styles.scrollContainer}
-            //keyExtractor={(item) => item.spotSummary.spotId}
+            keyExtractor={(item) => item.id}
             renderItem={({item}) => this._renderAttendance(item)}
             scrollEnabled={false}
             removeClippedSubviews={true}
@@ -294,10 +293,10 @@ export default class MarketAdd extends React.Component {
 
   _removeAttendance = (id = '') => {
     let cAttendances = this.state.attendances
-    let attendances = cAttendances.filter(function(att, index, arr){
+    let attendances = cAttendances.filter(function(att, index, arr) {
       return att.id != id
     })
-    this.setState({attendancesDisp: attendances, attendances})
+    this.setState({attendances})
   }
 
   _fetchData = async () => {

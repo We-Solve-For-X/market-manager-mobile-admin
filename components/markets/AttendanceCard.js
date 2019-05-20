@@ -37,7 +37,7 @@ export default class AttendanceCard extends React.PureComponent {
   render() {
     const { attendance, isCreate } = this.props
     const { isExpanded, removing} = this.state
-    const { name, legalName, category, refNum, status, amount, paid, repName, repSurname, repEmail, id, merchantId, invoiceId } = attendance
+    const { name, legalName, category, refNum, status, amount, paid, repName, repSurname, repEmail, id } = attendance
    //TODO: add proce zone
     let invStatus = status ? status : 'none'
     return (
@@ -70,14 +70,14 @@ export default class AttendanceCard extends React.PureComponent {
         </View>
 
         <ViewSwitch hide={!isExpanded} style={styles.expMainCont}>
-          {this._renderExpand(isCreate, merchantId, invStatus)}
+          {this._renderExpand(isCreate, id, invStatus)}
         </ViewSwitch>
       </View>
     )
   }
 
   _renderExpand = (isCreate = false, merchId = '', invStatus = '') => {
-    if(isCreate){
+    if(isCreate) {
       return(
         <View style={styles.expTopView}>
           <View>
