@@ -30,34 +30,35 @@ export default class AttendanceCard extends React.PureComponent {
   }
 
   componentDidMount = () => {
-    let amount = this.props.attendance.invoice ? this.props.attendance.invoice.amount : 0
+    let amount = this.props.attendance ? this.props.attendance.amount : 0
     this.setState({amount})
   }
 
   render() {
     const { attendance, isCreate } = this.props
     const { isExpanded, removing} = this.state
-    const { id, merchant, invoice} = attendance
-    const { isActive, repName, repSurname, name, description, priceZone, standId } = merchant
-    let invStatus = invoice ? invoice.status : 'none'
+    const { name, legalName, category, refNum, status, amount, paid, repName, repSurname, repEmail, id, merchantId, invoiceId } = attendance
+   //TODO: add proce zone
+    let invStatus = status ? status : 'none'
     return (
       <View style={styles.container}>
         <View style={styles.topBox} onPress={() => this.setState({isExpanded: !isExpanded})}>
           <View style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'}} >
             <Text style={styles.textMain}>{name}</Text>
-            <Text style={styles.textSub}>{repName} {repSurname}</Text>
-            <Text style={styles.textSub}>{`Price Bracket: ${priceZone.name}`}</Text>
-
             <ViewSwitch hide={isCreate}>
-              <View>
-                <Text>
-                <Text style={styles.textSub}>{`R${invoice ? invoice.amount : null}`}</Text>
-                <Text style={{fontSize: 13, fontWeight: 'bold', paddingVertical: 2, color: invStatus == 'paid' ? colors.pGreen : invStatus == 'submitted' ? colors.pBlue : colors.pRed}}>{` - ${invoice ? invoice.status : null}`}</Text>
-                </Text>
-                 <Text style={{fontSize: 13, fontWeight: 'bold', paddingVertical: 2, color: colors.pYellow}}>{`Refference: ${invoice ? invoice.refNum : null}`}</Text>
-              </View>
+            <Text>
+              <Text style={styles.textSub}>{`R ${amount ? amount : null}`}</Text>
+              <Text style={{fontSize: 13, fontWeight: 'bold', paddingVertical: 2, color: invStatus == 'paid' ? colors.pGreen : invStatus == 'submitted' ? colors.pBlue : colors.pRed}}>{`  (${status ? status : null})`}</Text>
+            </Text>
+            <Text style={{fontSize: 13, fontWeight: 'bold', paddingVertical: 2, color: colors.pYellow}}>{`Refference: ${refNum ? refNum : null}`}</Text>
+            <Text style={{fontSize: 13, fontWeight: 'bold', paddingVertical: 2, color: colors.pWhite}}>{`Paid: R ${paid ? paid : '0'}`}</Text>
+            <Text style={{fontSize: 13, fontWeight: 'bold', paddingVertical: 2, color: colors.pWhite}}>{`Owes: R ${amount - paid}`}</Text>
             </ViewSwitch>
-            
+            <Text style={styles.textSub}>Repr.: {repName} {repSurname}</Text>
+            <ViewSwitch hide={!attendance.priceZone}>
+            <Text style={styles.textSub}>{`Price Bracket: ${attendance.priceZone ? attendance.priceZone.name : null}`}</Text>
+            </ViewSwitch>
+           
           </View>
 
           <TouchableOpacity 
@@ -69,7 +70,7 @@ export default class AttendanceCard extends React.PureComponent {
         </View>
 
         <ViewSwitch hide={!isExpanded} style={styles.expMainCont}>
-          {this._renderExpand(isCreate, merchant.id, invoice ? invoice.status : null)}
+          {this._renderExpand(isCreate, merchantId, invStatus)}
         </ViewSwitch>
       </View>
     )
@@ -196,12 +197,12 @@ export default class AttendanceCard extends React.PureComponent {
   _submitPayment = async () => {
     this.setState({ submitting: true })
     const { merchant, invoice } = this.props.attendance
+    const { standName, legalName, category, refNum, status, paid, repName, repSurname, repEmail, id, merchantId, invoiceId } = this.props.attendance
+
     let method = this.state.paymentMethod
     let comment = this.state.paymentComment
-    let invoiceId = invoice.id
-    let merchantId = merchant.id
     let amount = parseFloat(this.state.amount)
-    let reference = invoice.refNum
+    let reference = refNum
 
     if(method == null || invoiceId == null || merchantId == null || reference == null) {
       systemAlert('Payment Error', 'Unable to retreive all fields required to make the payment')

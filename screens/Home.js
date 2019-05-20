@@ -77,9 +77,9 @@ export default class Home extends React.Component {
   }
 
   render() {
-    const { host, marketsTxt, loadSignOut, paymentsTxt, merchantsTxt, userName, cPassw, nPassw, loadingPw, pwErrorMessage, loadingPatch, patchErrorMessage, loading, errorMessage } = this.state
-    const { pName, pSurname, pEmail, pRole } = this.state
-    const { pbLoading, pbErrorMessage, priceB1_key, priceB1_name, priceB1_cost, priceB2_key, priceB2_name, priceB2_cost, priceB3_key, priceB3_name, priceB3_cost, priceB4_key, priceB4_name, priceB4_cost } = this.state
+    let { host, marketsTxt, loadSignOut, paymentsTxt, merchantsTxt, userName, cPassw, nPassw, loadingPw, pwErrorMessage, loadingPatch, patchErrorMessage, loading, errorMessage } = this.state
+    let { pName, pSurname, pEmail, pRole } = this.state
+    let { pbLoading, pbErrorMessage, priceB1_key, priceB1_name, priceB1_cost, priceB2_key, priceB2_name, priceB2_cost, priceB3_key, priceB3_name, priceB3_cost, priceB4_key, priceB4_name, priceB4_cost } = this.state
 
     return (
     <View style={styles.container}>

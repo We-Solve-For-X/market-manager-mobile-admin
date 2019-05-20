@@ -32,8 +32,8 @@ export default class CommunicationNew extends React.Component {
   }
 
   componentDidMount = async () => {
-    let administratorId = await asGet(ProfileCnsts.adminstId)
-    let userName = await asGet(ProfileCnsts.username)
+    const administratorId = await asGet(ProfileCnsts.adminstId)
+    const userName = await asGet(ProfileCnsts.username)
     await this.setState({fromId: administratorId, fromName: userName})
     this._fetchData()
   }

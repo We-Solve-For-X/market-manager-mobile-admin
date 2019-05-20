@@ -25,7 +25,6 @@ export default class Merchants extends React.Component {
       nApproved: null,
       pending: [],
       approved: [],
-      approvedDisp: []
     }
     this.signal = axios.CancelToken.source()
   }
@@ -40,7 +39,7 @@ export default class Merchants extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const {searchInput, nPending, pending, nApproved, approved, approvedDisp, loading, errorMessage } = this.state
+    const {searchInput, nPending, pending, nApproved, approved, loading, errorMessage } = this.state
     return (
       <View style={styles.container}>
       <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={100}>
@@ -53,7 +52,7 @@ export default class Merchants extends React.Component {
           }
           >
           <ErrorLine errorMessage={errorMessage}/>
-          <ViewSwitch hide={nPending == 0 || nPending == null}>
+          <ViewSwitch hide={!nPending}>
             <View style={styles.tileCont}>
               <Heading>Merchant Requests</Heading>
               <Subtitle>There are {nPending} merchant requests pending</Subtitle>
@@ -65,19 +64,19 @@ export default class Merchants extends React.Component {
               scrollEnabled={false}
             />
           </ViewSwitch>
-
-          <View style={styles.tileCont}>
+          
+          <ViewSwitch style={styles.tileCont} hide={!nApproved}>
             <Heading>All Merchant</Heading>
-            <Subtitle>There are {nApproved ? nApproved : '(?)'} approved merchants on the system</Subtitle>
-          </View>
+            <Subtitle>There are {nApproved ? nApproved : '0'} approved merchants on the system</Subtitle>
+          </ViewSwitch>
           <SearchBar
             placeholder={'Find a Merchant'} 
-            onChangeText={ (searchInput) => this._applySearch(searchInput)}
+            onChangeText={ (searchInput) => this.setState({searchInput})}
             value={searchInput}
           />
 
           <FlatList
-            data={approvedDisp}
+            data={this._applySearch(approved)}
             //keyExtractor={(item) => item.spotSummary.spotId}
             renderItem={({item}) => this._renderMerchant(item)}
             scrollEnabled={false}
@@ -91,16 +90,13 @@ export default class Merchants extends React.Component {
     )
   }
 
-  _applySearch = (searchInput) => {
-    this.setState({searchInput})
-    const { approved } = this.state
+  _applySearch = (merchants = []) => {
+    const { searchInput } = this.state
     const query = searchInput.toLowerCase().replace(" ", "")
-    const approvedDisp = approved.filter(item => {
+    return merchants.filter(item => {
       const standName = item.name.toLowerCase().replace(" ", "")
       return standName.includes(query)
      })
-
-     this.setState({approvedDisp})
   }
 
   _renderNewMerch = (merchant) => {
@@ -127,7 +123,6 @@ export default class Merchants extends React.Component {
         nApproved: response.data.nApproved,
         pending: response.data.pending,
         approved: response.data.approved,
-        approvedDisp: response.data.approved,
         errorMessage: null
       }) 
     } else {

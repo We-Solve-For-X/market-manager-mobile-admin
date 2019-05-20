@@ -28,7 +28,7 @@ export default class CommunicationView extends React.Component {
   }
 
   render() {
-    const { deleting } = this.state
+    let { deleting } = this.state
     const { navigation } = this.props
     const message = navigation.getParam('message', {none: 'none'});
     const { topic, text, fromName, description, id } = message
@@ -69,19 +69,9 @@ export default class CommunicationView extends React.Component {
     )
   }
 
-  _fetchData = async () => {
-    const { topic, text, fromName, toName} = message1
-    this.setState({
-      fromName,
-      toName,
-      topic,
-      text,
-    })
-  }
-
   _deleteMessage = async (id = '') => {
     this.setState({deleting: true})
-    const response = await deleteMessage(id, this.signal.token)
+    let response = await deleteMessage(id, this.signal.token)
     if (response.code == 200) {
       this.setState({deleting: false})
       this.props.navigation.goBack()

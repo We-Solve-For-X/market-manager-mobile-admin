@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, ScrollView, KeyboardAvoidingView } from 'react-native'
+import { View, StyleSheet, FlatList, ScrollView, KeyboardAvoidingView, RefreshControl } from 'react-native'
 import { isTablet } from "../constants/platform";
 import ButtonFloat from '../components/common/ButtonFloat'
 import { Text, Button, Title, Icon, TextInput } from '@shoutem/ui'
@@ -28,7 +28,7 @@ export default class MarketAdd extends React.Component {
     this.state = {
       loading: false,
       attendances: [],
-      attendancesDisp: [],
+      loadCreate: false,
 
       attendancesNew: [],
       loadingModal: false,
@@ -58,28 +58,33 @@ export default class MarketAdd extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, attendancesDisp, loading } = this.state
+    let { verifySubmit, name, description, takeNote, setupStart, marketStart, marketEnd, searchInput, attendances, loading, loadCreate } = this.state
     return (
       <View style={styles.container}>
       <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={80}>
-      <ScrollView>
+      <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={loading}
+          enabled={false}
+        />
+      }>
 
         <View style={styles.containerTop}>
           <View style={styles.containerTopSub}>
             <Title style={{color: colors.pWhite}}>Market Information</Title>
             { verifySubmit ? 
             (<View style={styles.submitContainer}>
-              <Button style={styleConsts.button} onPress={() => loading ? null : this._createMarket()}>
+              <Button style={styleConsts.button} onPress={() => loadCreate ? null : this._createMarket()}>
               <ViewSwitch hide={!isTablet}>
                 <Text>CONFIRM</Text>
               </ViewSwitch>
-              <ViewLoad hide={loading}>
+              <ViewLoad hide={loadCreate}>
                 <AntDesign name="check" size={22} style={{paddingHorizontal: 0}} />
               </ViewLoad>
-                
 
               </Button>
-              <Button style={styleConsts.button} onPress={() => loading ? null : this.setState({verifySubmit: false})}>
+              <Button style={styleConsts.button} onPress={() => loadCreate ? null : this.setState({verifySubmit: false})}>
                 <ViewSwitch hide={!isTablet}>
                   <Text>CANCELL</Text>
                 </ViewSwitch>
@@ -126,8 +131,7 @@ export default class MarketAdd extends React.Component {
                 }
                 // ... You can check the source to find the other keys.
               }}
-              onDateChange={(setupStart) => {console.log(setupStart)
-                this.setState({setupStart})}}
+              onDateChange={(setupStart) => { this.setState({setupStart})}}
             />
           </View>
           <View style={styles.divider}/>
@@ -202,21 +206,25 @@ export default class MarketAdd extends React.Component {
           
           <SearchBar
             placeholder={'Find a Merchant'} 
-            onChangeText={ (searchInput) => this._applySearch(searchInput)}
+            onChangeText={ (searchInput) => this.setState({searchInput}) } // this._applySearch(searchInput)}
             value={searchInput}
           />
 
           <FlatList
-            data={attendancesDisp}
+            //data={attendancesDisp}
+            data={this._applySearch(attendances)}
             contentContainerStyle={styles.scrollContainer}
             //keyExtractor={(item) => item.spotSummary.spotId}
             renderItem={({item}) => this._renderAttendance(item)}
             scrollEnabled={false}
             removeClippedSubviews={true}
             initialNumToRender={30}
-            // isLoading={false}
-            //ListEmptyComponent={<FlatlistError message={(isKite == 0 && surfAlertsEnabled) ? "No Surfable Spots Found" : (isKite == 1 && kiteAlertsEnabled) ? "No Surfable Spots Found" : "Activate Alerts"} noRetry={false}/>}
-          />
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                enabled={false}
+              />
+            }/>
         </ScrollView>
         </KeyboardAvoidingView>
         <ButtonFloat navigation={navigation}/>
@@ -231,16 +239,16 @@ export default class MarketAdd extends React.Component {
   }
 
   _createMarket = async () => {
-    this.setState({ loading: true })
+    this.setState({ loadCreate: true })
     const { attendances, name, takeNote, description, setupStart, marketStart, marketEnd } = this.state
     let merchsIn = attendances.map((val, ind) => {
-      return val.merchant.id
+      return val.id
     })
     if(attendances.length == 0) {
       systemAlert('Content Required', 'A market must have at least one attendance.')
       this.setState({
         verifySubmit: false,
-        loading: false
+        loadCreate: false
       })
       return
     }
@@ -248,7 +256,7 @@ export default class MarketAdd extends React.Component {
       incompleteFields()
       this.setState({
         verifySubmit: false,
-        loading: false
+        loadCreate: false
       })
       return
     }
@@ -264,32 +272,30 @@ export default class MarketAdd extends React.Component {
     }
     const response = await createMarket(createBody, this.signal.token)
     if (response.code == 200) {
-      await this.setState({ loading: false, verifySubmit: false }) 
+      await this.setState({ loadCreate: false, verifySubmit: false }) 
       this.props.navigation.goBack()
     } else {
       this.setState({
         errorMessage: response.data,
         verifySubmit: false,
-        loading: false
+        loadCreate: false
       })
     }
   }
 
-  _applySearch = (searchInput) => {
-    this.setState({searchInput})
-    const { attendances } = this.state
+  _applySearch = (attendances = []) => {
+    const { searchInput } = this.state
     const query = searchInput.toLowerCase().replace(" ", "")
-    const attendancesDisp = attendances.filter(item => {
-      const standName = item.merchant.name.toLowerCase().replace(" ", "")
+    return attendances.filter( item => {
+      const standName = item.name.toLowerCase().replace(" ", "")
       return standName.includes(query)
      })
-     this.setState({attendancesDisp})
   }
 
   _removeAttendance = (id = '') => {
     let cAttendances = this.state.attendances
     let attendances = cAttendances.filter(function(att, index, arr){
-      return att.merchant.id != id
+      return att.id != id
     })
     this.setState({attendancesDisp: attendances, attendances})
   }
@@ -299,8 +305,7 @@ export default class MarketAdd extends React.Component {
     const response = await loadCreate(HostID, this.signal.token)
     if (response.code == 200) {
       this.setState({
-        attendances: response.data.attendances,
-        attendancesDisp: response.data.attendances,
+        attendances: response.data,
         loading: false
       }) 
     } else {

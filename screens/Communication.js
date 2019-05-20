@@ -36,7 +36,7 @@ export default class Communication extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const { messages, loading, shouldRefresh, errorMessage } = this.state
+    let { messages, loading, shouldRefresh, errorMessage } = this.state
     return (
       <View style={styles.container}>
         <Updater shouldRefresh={shouldRefresh} onRefresh={() => this._fetchData()} doneRefresh={() => this.setState({shouldRefresh: false})} />

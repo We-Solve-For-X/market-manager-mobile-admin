@@ -26,16 +26,16 @@ export default class AttendanceAddCard extends React.PureComponent {
   render() {
     const { navigation, attendance } = this.props
     const { isExpanded, adding } = this.state
-    const { id, standId, merchant, invoice} = attendance
+    //const { id, standId, merchant, invoice} = attendance
 
     return (
       <View style={styles.container}>
         <View style={styles.topBox} onPress={() => this.setState({isExpanded: !isExpanded})}>
           <View style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'}} >
-            <Text style={styles.textMain}>{merchant.name}</Text>
-            <Text style={styles.textSub}>{merchant.repName} {merchant.repSurname}</Text>
-            <Text style={styles.textSub}>{merchant.priceZone.name}</Text>
-            <Text style={styles.textSub}>{merchant.isActive ? 'ACTIVE' : 'INACTIVE'}</Text>
+            <Text style={styles.textMain}>{attendance.name}</Text>
+            <Text style={styles.textSub}>{attendance.repName} {attendance.repSurname}</Text>
+            <Text style={styles.textSub}>{attendance.priceZone.name}</Text>
+            <Text style={styles.textSub}>{attendance.isActive ? 'ACTIVE' : 'INACTIVE'}</Text>
           </View>
 
           <TouchableOpacity 
@@ -60,11 +60,11 @@ export default class AttendanceAddCard extends React.PureComponent {
   _renderExpand = () => {
     return(
       <View style={styles.rendExpCont}>
-          <Button style={styleConsts.button} onPress={() => this._addMerchant()}>
+          <Button style={styleConsts.button} onPress={() => this.state.adding ? null : this._addMerchant()}>
             <ViewSwitch hide={!isTablet}>
               <Text>ADD</Text>
             </ViewSwitch>
-            <ViewLoad hide={this.state.sending}>
+            <ViewLoad hide={this.state.adding}>
               <Icon name="plus-button" />
             </ViewLoad>
           </Button>
@@ -74,13 +74,12 @@ export default class AttendanceAddCard extends React.PureComponent {
 
   _addMerchant = async () => {
     let marketId = this.props.marketId
-    let merchantId = this.props.attendance.merchant.id
+    let merchantId = this.props.attendance.id
     this.setState({ adding: true })
-    console.log(marketId, merchantId)
     const response = await addMerchant(marketId, merchantId)
     if (response.code == 200) {
-      //if (true) {
       this.setState({
+        isExpanded: false,
         adding: false
       }) 
       this.props.removeNewAttendance(merchantId)
@@ -91,9 +90,6 @@ export default class AttendanceAddCard extends React.PureComponent {
       })
     }
   }
-
-
-
 
 }
 
